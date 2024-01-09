@@ -1,0 +1,12 @@
+# config/packages/easy_admin.yaml
+easy_admin:
+    entities:
+        - src\Entity\FormTemplate
+    FormTemplate:
+            class: src\Entity\FormTemplate
+            list:
+                actions:
+                    - { name: 'custom_associate_action', label: 'Ajouter à ma liste' }
+
+    dashboard:
+        - { entity: 'TemplateForm', label: 'Liste des questionnaires disponibles', icon: 'file' }

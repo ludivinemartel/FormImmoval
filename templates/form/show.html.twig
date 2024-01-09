@@ -1,0 +1,13 @@
+{% block content %}
+    <h1>{{ formTemplate.title }}</h1>
+
+    <form method="post" action="{{ path('submit', {'formTemplateId': formTemplate.id}) }}">
+        {% for question in questions %}
+        <label>{{ question.questionText }}</label>
+        <input type="text" name="form_responses[{{ question.id }}]">
+        <input type="hidden" name="formQuestionId[{{ question.id }}]" value="{{ question.id }}">
+    {% endfor %}
+
+        <button type="submit">Soumettre</button>
+    </form>
+{% endblock %}

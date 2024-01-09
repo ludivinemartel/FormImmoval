@@ -17,244 +17,44 @@
 
       </div>
       <div class="form-group">
-        <form action="pdf.php" method="POST" id="formestimation"  enctype="multipart/form-data">
-
-          <p>Pour mieux connaître votre projet</p>
-          <input type="textarea" name="description" class="form-control" /> <br />
-       
-          <p>Nom</p>
-          <input type="text" name="name" class="form-control" /> <br />
-
-          <p>Prénom</p>
-          <input type="text" name="forname" class="form-control" /> <br />
-
-          <p>Numéro de téléphone</p>
-          <input type="text" name="phone" class="form-control" /> <br />
-
-          <p>Adresse mail</p>
-          <input type="text" name="phone" class="form-control" /> <br />
-
-          <p>Type de bien à vendre</p>
-          <input type="checkbox" id="Maison" name="type" value="Maison">
-          <label for="Maison">Maison</label>
-
-          <input type="checkbox" id="Appartement" name="type" value="Appartement">
-          <label for="Appartement">Appartement</label>
-
-          <p>Saisir l'adresse du bien à faire estimer (ex : 22 avenue de la Paix 67000 Strasbourg)</p>
-          <input type="text" name="adresse" class="form-control" /> <br />
-
-          <p>Le quartier</p></br>
-          <input type="checkbox" id="CentreVille" name="quartier" value="CentreVille">
-          <label for="CentreVille">Centre ville</label>
-
-          <input type="checkbox" id="QuartierGare" name="quartier" value="QuartierGare">
-          <label for="QuartierGare">Quartier Gare</label>
-
-          <input type="checkbox" id="Esplanade" name="quartier" value="Esplanade">
-          <label for="Esplanade">Esplanade</label>
-
-          <input type="checkbox" id="MontagneVerte" name="quartier" value="MontagneVerte">
-          <label for="MontagneVerte">Montagne verte</label>
-
-          <input type="checkbox" id="Hautepierre" name="quartier" value="Hautepierre">
-          <label for="Hautepierre">Hautepierre</label>
-
-          <input type="checkbox" id="Cronenbourg" name="quartier" value="Cronenbourg">
-          <label for="Cronenbourg">Cronenbourg</label>
-
-          <input type="checkbox" id="Koenigshoffen" name="quartier" value="Koenigshoffen">
-          <label for="Koenigshoffen">Koenigshoffen</label>
-
-          <input type="checkbox" id="Elsau" name="quartier" value="Elsau">
-          <label for="Elsau">Elsau</label>
-
-
-
-
-          <p>Caractéristiques de votre bien</p>
-          <input type="textarea" name="caracteristique" class="form-control" /> <br />
-
-          <p>Surface du bien (m²) :</p>
-          <input type="text" name="surface" class="form-control" /> <br />
-
-          <p>Surface du séjour (m²) :</p>
-          <input type="text" name="sejour" class="form-control" /> <br />
-
-          <p>Nombre de pièces :</p>
-          <input type="text" name="pieces" class="form-control" /> <br />
-         
-          <p>Nombre de chambres :</p>
-          <input type="text" name="chambres" class="form-control" /> <br />
-
-          <p>Nombre de salles de bains :</p>
-          <input type="text" name="bain" class="form-control" /> <br />
-
-          <p>Nombre de salles d'eau :</p>
-          <input type="text" name="eau" class="form-control" /> <br />
-
-          <p>État général du bien :</p>
-          <input type="checkbox" id="renover" name="etat" value="renover">
-          <label for="renover">A renover</label>
-
-          <input type="checkbox" id="rafraichir" name="etat" value="rafraichir">
-          <label for="rafraichir">A rafraichir</label>
-
-          <input type="checkbox" id="good" name="etat" value="good">
-          <label for="good">Bon</label>
-
-          <input type="checkbox" id="verygood" name="etat" value="verygood">
-          <label for="verygood">Très bon</label>
-
-          <input type="checkbox" id="neuf" name="etat" value="neuf">
-          <label for="neuf">Refait à neuf</label>
-
-          <p>Locataire en place :</p>
-          <input type="checkbox" id="yes" name="locataire" value="yes">
-          <label for="yes">Oui</label>
-
-          <input type="checkbox" id="no" name="locataire" value="no">
-          <label for="no">Non</label>
-       
-          <p>Photos du bien</p></br>
-
-          <label for="homepicture">Insérer une image</label> </br>
-          <input type="file" id="homepicture" name="homepicture" accept="image/png, image/jpeg" /> </br>
-
-
-
-
-
-          <p>Caractéristiques de l'immeuble</p>
-          <input type="textarea" name="immeuble" class="form-control" /> <br />
-
-          <p>Année de construction :</p>
-          <input type="checkbox" id="1800" name="equipement[]" value="1800">
-          <label for="1800">Avant 1800</label>
-
-          <input type="checkbox" id="Between18001900" name="equipement[]" value="Between18001900">
-          <label for="Between18001900">1800 à 1900</label>
-
-          <input type="checkbox" id="Between19001950" name="equipement[]" value="Between19001950">
-          <label for="Between19001950">1900 à 1950</label>
-
-          <input type="checkbox" id="Between19501980" name="equipement[]" value="Between19501980">
-          <label for="Between19501980">1950 à 1980</label>
-
-          <input type="checkbox" id="Between19802000" name="equipement[]" value="Between19802000">
-          <label for="Between19802000">1980 à 2000</label>
-
-          <input type="checkbox" id="Between20002015" name="equipement[]" value="Between20002015">
-          <label for="Between20002015">2000 à 2015</label>
-
-          <input type="checkbox" id="After2015" name="equipement[]" value="After2015">
-          <label for="After2015">Après 2015</label>
-
-          <p>Étage de l'appartement :</p>
-          <input type="text" name="stagehome" class="form-control" /> <br/>
-
-          <p>Nombre d'étage(s)/niveaux</p>
-          <input type="text" name="stage" class="form-control" /> <br/>
-
-          <p>Chauffage :</p>
-          <input type="checkbox" id="individuel" name="chauffage" value="individuel">
-          <label for="individuel">Individuel</label>
-
-          <input type="checkbox" id="collectif" name="chauffage" value="collectif">
-          <label for="collectif">Collectif</label>
-
-          <p>Balcon</p>
-          <input type="checkbox" id="0" name="balcon" value="0">
-          <label for="0">0</label>
-
-          <input type="checkbox" id="1" name="balcon" value="1">
-          <label for="1">1</label> 
-         
-          <input type="checkbox" id="2" name="balcon" value="2">
-          <label for="2">2</label> 
-
-          <input type="checkbox" id="3" name="balcon" value="3">
-          <label for="3">3 et plus</label> 
-
-          <p>Terrasse</p>
-          <input type="checkbox" id="0" name="terrasse" value="0">
-          <label for="0">0</label>
-
-          <input type="checkbox" id="1" name="terrasse" value="1">
-          <label for="1">1</label> 
-         
-          <input type="checkbox" id="2" name="terrasse" value="2">
-          <label for="2">2</label> 
-
-          <input type="checkbox" id="3" name="terrasse" value="3">
-          <label for="3">3 et plus</label> 
-
-          <p>Cave</p>
-          <input type="checkbox" id="yes" name="cave" value="yes">
-          <label for="yes">Oui</label>
-
-          <input type="checkbox" id="no" name="cave" value="no">
-          <label for="no">Non</label>
-
-
-
-
-
-          <p>Informations complémentaires</p>
-          <input type="textarea" name="info" class="form-control" /> <br />
-
-          <p>Parking</p>
-          <input type="checkbox" id="0" name="parking" value="0">
-          <label for="0">0</label>
-
-          <input type="checkbox" id="1" name="parking" value="1">
-          <label for="1">1</label> 
-         
-          <input type="checkbox" id="2" name="parking" value="2">
-          <label for="2">2</label> 
-
-          <input type="checkbox" id="3" name="parking" value="3">
-          <label for="3">3 et plus</label> 
-
-          <p>Garage</p>
-          <input type="checkbox" id="0" name="garage" value="0">
-          <label for="0">0</label>
-
-          <input type="checkbox" id="1" name="garage" value="1">
-          <label for="1">1</label> 
-         
-          <input type="checkbox" id="2" name="garage" value="2">
-          <label for="2">2</label> 
-
-          <input type="checkbox" id="3" name="garage" value="3">
-          <label for="3">3 et plus</label> 
-
-          <p>Vis-à-vis :</p>
-          <input type="checkbox" id="proche" name="vis" value="proche">
-          <label for="proche">Proche</label>
-
-          <input type="checkbox" id="normal" name="vis" value="normal">
-          <label for="normal">Normal</label> 
-         
-          <input type="checkbox" id="eloigne" name="vis" value="eloigne">
-          <label for="eloigne">Éloigné</label> 
-
-          <p>Exposition principale :</p>
-          <input type="checkbox" id="nord" name="parking" value="nord">
-          <label for="nord">Nord</label>
-
-          <input type="checkbox" id="sud" name="parking" value="sud">
-          <label for="sud">Sud</label> 
-         
-          <input type="checkbox" id="est" name="parking" value="est">
-          <label for="est">Est</label> 
-
-          <input type="checkbox" id="ouest" name="parking" value="ouest">
-          <label for="ouest">Ouest</label> 
-
-          </br><button type="submit" class="btn btn-primary">Envoyer</button>
-
-        </form>
+        
+        {{ form_start(form, {'attr': {'id': 'formestimation', 'enctype': 'multipart/form-data'}, 'action': path('app_formulaire_submit')}) }}
+
+        <h2>Pour mieux connaître votre projet</h2>
+          {{ form_row(form.name) }}
+          {{ form_row(form.forname) }}
+          {{ form_row(form.phone) }}
+          {{ form_row(form.mail) }}
+          {{ form_row(form.type) }}
+          {{ form_row(form.adresse) }}
+          {{ form_row(form.quartier) }}
+
+          <h2>Caractéristiques de votre bien</h2>
+          {{ form_row(form.surface) }}
+          {{ form_row(form.sejour) }}
+          {{ form_row(form.pieces) }}
+          {{ form_row(form.chambres) }}
+          {{ form_row(form.bain) }}
+          {{ form_row(form.eau) }}
+          {{ form_row(form.etat) }}
+          {{ form_row(form.locataire) }}
+
+          <h2>Caractéristiques de l'immeuble</h2>
+          {{ form_row(form.years) }}
+          {{ form_row(form.stagehome) }}
+          {{ form_row(form.stage) }}
+          {{ form_row(form.chauffage) }}   
+          {{ form_row(form.balcon) }}
+          {{ form_row(form.terrasse) }} 
+          {{ form_row(form.cave) }} 
+
+          <h2>Information complémentaire</h2>
+          {{ form_row(form.parking) }}
+          {{ form_row(form.garage) }}
+          {{ form_row(form.view) }}
+          {{ form_row(form.exposition) }}
+
+          {{ form_end(form) }}
       </div>
     </div>
   </div>

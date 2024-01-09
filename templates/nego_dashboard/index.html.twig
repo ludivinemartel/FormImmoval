@@ -1,0 +1,9 @@
+{% block content %}
+
+    <h2>Questionnaires disponibles</h2>
+    <ul>
+        {% for FormTemplate in FormTemplates %}
+            <li>{{ FormTemplate.title }}</li>
+        {% endfor %}
+    </ul>
+{% endblock %}

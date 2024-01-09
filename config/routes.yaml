@@ -3,3 +3,18 @@ controllers:
         path: ../src/Controller/
         namespace: App\Controller
     type: attribute
+
+formulaire_submit:
+    path: '/formulaire/submit'
+    controller: App\Controller\FormController::submitAction
+    methods: [POST]
+
+negociator_dashboard:
+    path: '/Nego/NegoDashboardController'
+    controller: 'App\Controller\Nego\NegoDashboardController::index'
+    methods: ['GET']
+
+handle_form_submission:
+    path: /submit
+    controller: App\Controller\QuestionnairController::submit
+    methods: [POST]
