@@ -45,10 +45,5 @@ class DashboardController extends AbstractDashboardController
                 MenuItem::linkToCrud('Ajouter un négociateur', 'fas fa-plus', Negociateur::class)->setAction(Crud::PAGE_NEW),
                 MenuItem::linkToCrud('Voir négociateurs', 'fas fa-eye', Negociateur::class)
             ]);
-            
-        yield MenuItem::section('Formulaire');
-        yield MenuItem::subMenu('Actions', 'fas fa-bars')->setSubItems([
-                MenuItem::linkToCrud('Voir les formulaires', 'fas fa-eye', FormTemplate::class)->setController(FormTemplateCrudController::class),
-        ]);
     }
 }
