@@ -1,15 +1,24 @@
 {% block content %}
-<nav>
-    <ul>
-        <li>
-            <a href="{{ path('app_home') }}" class="linknav">ACCUEIL</a>
+
+<div class="hstack gap-3">
+<nav class="navbar navbar-light" style="background-color: #e3f2fd;">
+    <div class="p-2">
+    <ul class="nav">
+        <li class="nav-item">
+            <a class="nav-link"href="{{ path('app_home') }}" class="linknav">ACCUEIL</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="{{ path('app_formulaire_index') }}" class="linknav">FORMULAIRE</a>
         </li>
         <li>
-            <a href="{{ path('app_formulaire_index') }}" class="linknav">FORMULAIRE</a>
+        </div>
+        <div class="p-2 ms-auto">
+            <button class="btn btn-sm btn-outline-secondary" type="button">
+            <a class="nav-link" href="{{ path('app_security_login') }}">CONNEXION</a>
+            </button>
         </li>
-        <li>
-            <a href="{{ path('app_login_index') }}" class="linknav">CONNEXION</a>
-        </li>
+    </div>
     </ul>
 </nav>
+</div>
 {% endblock %}

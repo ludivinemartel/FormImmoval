@@ -18,3 +18,7 @@ handle_form_submission:
     path: /submit
     controller: App\Controller\QuestionnairController::submit
     methods: [POST]
+
+app_security_login:
+    path: /login
+    controller: App\Controller\SecurityController::login
