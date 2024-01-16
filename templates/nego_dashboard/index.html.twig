@@ -1,9 +1,18 @@
-{% block content %}
+{# {% extends 'base.html.twig' %}
 
-    <h2>Questionnaires disponibles</h2>
+{% block title %} {{ parent() }} - Dashboard Négociateur {% endblock title %}
+
+{% block body %}
+    <div class="vstack gap-2 col-md-9 mx-auto m-5 display-6">
+    Bienvenue sur votre dashboard {{ forname }} {{ name }} !
+  </div>
+
+  <h2>Modèles de formulaires disponibles :</h2>
     <ul>
-        {% for FormTemplate in FormTemplates %}
-            <li>{{ FormTemplate.title }}</li>
-        {% endfor %}
+      {% for formTemplate in formTemplates %}
+        <li>{{ formTemplate.title }}</li>
+      {% endfor %}
     </ul>
+  </div>
 {% endblock %}
+ #}
