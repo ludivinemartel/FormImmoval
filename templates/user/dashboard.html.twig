@@ -1,0 +1,29 @@
+{% extends 'base.html.twig' %}
+
+{% block title %} {{ parent() }} - Dashboard Négociateur {% endblock title %}
+
+{% block body %}
+    {% if 'ROLE_ADMIN' in app.user.roles %}
+        {% set redirectRoute = 'app_home' %}
+        {% if redirectRoute %}
+            {% if app.user and redirectRoute %}
+                {% if redirectRouteParams is defined %}
+                    {% set redirectRouteParams = redirectRouteParams|default([]) %}
+                    {% set redirectRouteUrl = path(redirectRoute, redirectRouteParams) %}
+                {% else %}
+                    {% set redirectRouteUrl = path(redirectRoute) %}
+                {% endif %}
+                {% if redirectRouteUrl %}
+                    <script>
+                        window.location.href = "{{ redirectRouteUrl|e('js') }}";
+                    </script>
+                {% endif %}
+            {% endif %}
+        {% endif %}
+    {% else %}
+        <div class="vstack gap-2 col-md-9 mx-auto m-5 display-6">
+            Bienvenue sur votre dashboard Négociateur {{ app.user.Forname }} !
+        </div>
+    {% endif %}
+{% endblock %}
+

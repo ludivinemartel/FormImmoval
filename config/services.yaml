@@ -20,9 +20,23 @@ services:
             - '../src/Entity/'
             - '../src/Kernel.php'
 
+    App\EntityListener\:
+        resource: "../src/EntityListener"
+        tags: ["doctrine.orm.entity_listener"]
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
 
-    App\Controller\Nego\NegoDashboardController:
+    Symfony\Component\Security\Core\Security:
+        public: true
+
+    App\Security\UserProvider:
         arguments:
-            $entityManager: '@doctrine.orm.entity_manager'
+            $userRepository: '@App\Repository\UserRepository'
+
+    App\Controller\Admin\:
+        resource: '../src/Controller/Admin'
+        tags: ['controller.service_arguments']
+
+    App\Validator\Constraints\ImmovalEmailValidator:
+        tags:
+            - { name: 'validator.constraint_validator', alias: 'app.validator.immoval_email' }

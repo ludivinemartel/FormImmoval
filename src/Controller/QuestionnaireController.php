@@ -11,7 +11,6 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Request;
 use App\Entity\FormReponse;
 
-
 class QuestionnaireController extends AbstractController
 {
     private EntityManagerInterface $entityManager;

@@ -9,16 +9,16 @@ formulaire_submit:
     controller: App\Controller\FormController::submitAction
     methods: [POST]
 
-negociator_dashboard:
-    path: '/Nego/NegoDashboardController'
-    controller: 'App\Controller\Nego\NegoDashboardController::index'
-    methods: ['GET']
-
 handle_form_submission:
     path: /submit
     controller: App\Controller\QuestionnairController::submit
     methods: [POST]
 
-app_security_login:
-    path: /login
-    controller: App\Controller\SecurityController::login
+user_dashboard:
+    path: '/dashboard'
+    controller: 'App\Controller\UserController::dashboard'
+    methods: ['GET']
+
+admin_dashboard:
+    path: '/admin'
+    controller: 'App\Controller\AdminController::dashboard'
