@@ -43,37 +43,53 @@ class QuestionnaireController extends AbstractController
         try {
             // Récupérer les données brutes du formulaire
             $formData = $request->request->all();
-
+    
             // Récupérer le formulaire associé aux réponses
             $formTemplate = $this->entityManager->getRepository(FormTemplate::class)->find($formTemplateId);
-
+    
             // Vérifier si le formulaire existe
             if (!$formTemplate) {
                 throw $this->createNotFoundException('Formulaire non trouvé');
             }
-
+    
+            // Récupérer l'utilisateur connecté
+            $user = $this->getUser();
+    
+            // Vérifier si un utilisateur est connecté
+            if (!$user) {
+                throw $this->createAccessDeniedException('Utilisateur non connecté');
+            }
+    
+            // Récupérer la date actuelle
+            $currentDate = new \DateTimeImmutable();
+    
             // Récupérer les réponses dans la base de données
             foreach ($formData['form_responses'] as $formQuestionId => $responseText) {
                 // Créer une nouvelle instance de l'entité FormReponse
                 $formReponse = new FormReponse();
-
+    
                 // Set la réponse dans l'entité
                 $formReponse->setFormTextAnswer($responseText);
-
+    
                 // Associer le formulaire aux réponses
                 $formReponse->setFormTemplateTitle($formTemplate);
-
                 $formReponse->setFormQuestion($this->entityManager->getReference(FormQuestion::class, $formQuestionId));
-
+    
+                // Ajouter la date actuelle
+                $formReponse->setDate($currentDate);
+    
+                // Associer l'utilisateur à la réponse
+                $formReponse->setUser($user);
+    
                 // Persist l'entité dans l'EntityManager
                 $this->entityManager->persist($formReponse);
             }
-
+    
             // Flush les changements dans la base de données
             $this->entityManager->flush();
-
+    
             // Rediriger ou afficher une page de confirmation
-            return $this->render('home/index.html.twig');
+            return $this->render('form/thank.html.twig');
         } catch (\Throwable $e) {
             // Gérer l'erreur
             throw $e;

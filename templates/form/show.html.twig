@@ -1,5 +1,5 @@
 {% block content %}
-    <h1>{{ formTemplate.title }}</h1>
+    <h1 class="mb-3 mt-3 font-weight-normal">{{ formTemplate.title }}</h1>
 
     <form method="post" action="{{ path('submit', {'formTemplateId': formTemplate.id}) }}">
         {% for question in questions %}
@@ -8,6 +8,6 @@
         <input type="hidden" name="formQuestionId[{{ question.id }}]" value="{{ question.id }}">
     {% endfor %}
 
-        <button type="submit">Soumettre</button>
+        <button type="submit" class="btn btn-info">Soumettre</button>
     </form>
 {% endblock %}

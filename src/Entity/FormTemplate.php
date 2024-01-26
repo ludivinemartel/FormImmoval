@@ -20,7 +20,6 @@ class FormTemplate
 
     #[ORM\OneToMany(mappedBy: 'formTemplate', targetEntity: FormQuestion::class, cascade: ['persist', 'remove'])]
     private Collection $formQuestions;
-    
 
     public function __construct()
     {

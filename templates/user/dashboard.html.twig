@@ -21,9 +21,37 @@
             {% endif %}
         {% endif %}
     {% else %}
-        <div class="vstack gap-2 col-md-9 mx-auto m-5 display-6">
-            Bienvenue sur votre dashboard Négociateur {{ app.user.Forname }} !
-        </div>
+        <h2 class="vstack gap-2 col-md-9 mx-auto m-5 display-6">
+            Bienvenue sur votre dashboard négociateur {{ app.user.Forname }} !
+        </h2>
+        <div class="col-sm-6">
+        <table>
+            <thead>
+                <tr>
+                    <th>Titre du formulaire</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for formTemplate in formTemplates %}
+                    <tr>
+                        <td>{{ formTemplate.title }}</td>
+                        <td>
+                            <a class="btn btn-info" href="#">Ajouter</a>
+                        </td>
+                        <td>
+                            <a class="btn btn-info" href="{{ path('app_user_show_form', {'userId': app.user.id, 'formTemplateId': formTemplate.id}) }}">Voir le formulaire</a>
+                        </td>
+
+                        <td>
+                            <a class="btn btn-info" href="{{ path('app_user_show_answers', {'formTemplateId': formTemplate.id}) }}">Voir les réponses au formulaire</a>
+                        </td>                        
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
     {% endif %}
 {% endblock %}
 
