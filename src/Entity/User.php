@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\UserRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -12,7 +14,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[UniqueEntity('email')]
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\EntityListeners(['App\EntityListener\UserListener'])]
-class User implements UserInterface, PasswordAuthenticatedUserInterface
+class User implements PasswordAuthenticatedUserInterface, UserInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -55,6 +57,17 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
 
     private ?string $plainPassword = null;
+
+    #[ORM\OneToOne(mappedBy: 'Users', cascade: ['persist', 'remove'])]
+    private ?UsersFormTemplate $usersFormTemplate = null;
+
+    #[ORM\OneToMany(mappedBy: 'user', targetEntity: FormReponse::class)]
+    private Collection $FormResponse;
+
+    public function __construct()
+    {
+        $this->FormResponse = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -136,6 +149,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
+    public function eraseCredentials(): void
+{
+    $this->plainPassword = null;
+}
+
     public function getPlainPassword(): ?string
     {
         return $this->plainPassword;
@@ -176,12 +194,55 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    /**
-     * @see UserInterface
-     */
-    public function eraseCredentials(): void
+    public function getUsersFormTemplate(): ?UsersFormTemplate
     {
-        // If you store any temporary, sensitive data on the user, clear it here
-        // $this->plainPassword = null;
+        return $this->usersFormTemplate;
+    }
+
+    public function setUsersFormTemplate(?UsersFormTemplate $usersFormTemplate): static
+    {
+        // unset the owning side of the relation if necessary
+        if ($usersFormTemplate === null && $this->usersFormTemplate !== null) {
+            $this->usersFormTemplate->setUsers(null);
+        }
+
+        // set the owning side of the relation if necessary
+        if ($usersFormTemplate !== null && $usersFormTemplate->getUsers() !== $this) {
+            $usersFormTemplate->setUsers($this);
+        }
+
+        $this->usersFormTemplate = $usersFormTemplate;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, FormReponse>
+     */
+    public function getFormResponse(): Collection
+    {
+        return $this->FormResponse;
+    }
+
+    public function addFormResponse(FormReponse $formResponse): static
+    {
+        if (!$this->FormResponse->contains($formResponse)) {
+            $this->FormResponse->add($formResponse);
+            $formResponse->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeFormResponse(FormReponse $formResponse): static
+    {
+        if ($this->FormResponse->removeElement($formResponse)) {
+            // set the owning side to null (unless already changed)
+            if ($formResponse->getUser() === $this) {
+                $formResponse->setUser(null);
+            }
+        }
+
+        return $this;
     }
 }

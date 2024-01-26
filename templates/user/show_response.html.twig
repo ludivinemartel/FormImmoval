@@ -1,0 +1,48 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Détails de la réponse{% endblock %}
+
+{% block body %}
+<div class="col-sm-6">
+    <h4 class="mb-3 mt-3 font-weight-normal">Réponse au formulaire "{{ formTemplate.title }}"</h4>
+</div>
+
+{% if formResponses is empty %}
+    <p>Aucune réponse pour le moment.</p>
+{% else %}
+<div class="col-sm-6">
+    <h4 class="mb-3 mt-3 font-weight-normal">Formulaire reçu le {{ date|date('d.m.Y') }}</h4>
+</div>
+    <ul>
+        {% for formResponse in formResponses %}
+            <li>
+                {% if formResponse.FormQuestion %}
+                    <p>{{ formResponse.FormQuestion.questionText }} : {{ formResponse.FormTextAnswer }}</p>
+                {% endif %}
+            </li>
+        {% endfor %}
+    </ul>
+    <div class="col-sm-6">
+        <a class="btn btn-info" href="{{ path('app_user_download_responses', {'formTemplateId': formTemplate.id, 'date': date }) }}">Télécharger en pdf</a>
+    </div>
+
+
+
+    <div class="timeline">
+        <div class="timeline-item">
+            <div class="timeline-content">
+                <h4>Suivi de réponse au formulaire</h4>
+                <div class="timeline-date"> Date de réception : {{ date|date('d.m.Y') }}</div>
+                <div class="timeline-date"> Date de réponse : {{ date|date('d.m.Y') }}</div>
+                <div class="timeline-date"> Date de relance : {{ date|date('d.m.Y') }}</div>
+
+                <div class="col-sm-6">
+                    <a class="btn btn-info" href="#">Cloturer formulaire</a>
+                </div>
+            </div>
+        </div>
+
+
+
+{% endif %}
+{% endblock %}

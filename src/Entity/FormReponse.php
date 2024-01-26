@@ -25,6 +25,12 @@ class FormReponse
     #[ORM\JoinColumn(nullable: false)]
     private ?FormQuestion $FormQuestion = null;
 
+    #[ORM\ManyToOne(inversedBy: 'FormResponse')]
+    private ?User $user = null;
+
+    #[ORM\Column]
+    private ?\DateTimeImmutable $Date = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -66,4 +72,27 @@ class FormReponse
         return $this;
     }
 
+    public function getUser(): ?User
+    {
+        return $this->user;
+    }
+
+    public function setUser(?User $user): static
+    {
+        $this->user = $user;
+
+        return $this;
+    }
+
+    public function getDate(): ?\DateTimeImmutable
+    {
+        return $this->Date;
+    }
+
+    public function setDate(\DateTimeImmutable $Date): static
+    {
+        $this->Date = $Date;
+
+        return $this;
+    }
 }
