@@ -4,12 +4,14 @@ namespace App\Controller;
 
 use App\Entity\FormTemplate;
 use App\Entity\FormQuestion;
+use App\Entity\FormReponse;
+use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Request;
-use App\Entity\FormReponse;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 
 class QuestionnaireController extends AbstractController
 {
@@ -87,12 +89,47 @@ class QuestionnaireController extends AbstractController
     
             // Flush les changements dans la base de données
             $this->entityManager->flush();
-    
-            // Rediriger ou afficher une page de confirmation
-            return $this->render('form/thank.html.twig');
+
+            // Passer le nom et le prénom à la vue de la page de remerciement
+            return $this->render('form/thank.html.twig', [
+               'user'=> $user
+            ]);
         } catch (\Throwable $e) {
             // Gérer l'erreur
             throw $e;
         }
     }
-}
+
+
+    #[Route('/user/close-form/{formTemplateId}/{date}', name: 'app_user_close_form', methods: ['POST'])]
+    public function closeForm(int $formTemplateId, string $date): RedirectResponse
+    {
+        // Récupérer le modèle de formulaire et l'utilisateur depuis la base de données
+        $formTemplate = $this->entityManager->getRepository(FormTemplate::class)->find($formTemplateId);
+    
+        // Récupérer les réponses dans la base de données
+        $formResponses = $this->entityManager->getRepository(FormReponse::class)->findBy([
+            'FormTemplateTitle' => $formTemplate,
+            'Date' => new \DateTimeImmutable($date),
+   
+        ]);
+    
+        // Regrouper les réponses par date, formulaire et utilisateur
+        $groupedResponses = [];
+        foreach ($formResponses as $formResponse) {
+            $formattedDate = $formResponse->getDate()->format('Y-m-d H:i:s');
+            $key = $formattedDate . '_' . $formTemplateId;
+            $groupedResponses[$key][] = $formResponse;
+        }
+    
+        // Supprimer les réponses spécifiques
+        foreach ($formResponses as $formResponse) {
+            $this->entityManager->remove($formResponse);
+        }
+    
+        $this->entityManager->flush();
+       
+        return $this->redirectToRoute('user_dashboard');
+
+    }
+}    

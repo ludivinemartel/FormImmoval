@@ -3,46 +3,62 @@
 {% block title %}Détails de la réponse{% endblock %}
 
 {% block body %}
-<div class="col-sm-6">
-    <h4 class="mb-3 mt-3 font-weight-normal">Réponse au formulaire "{{ formTemplate.title }}"</h4>
-</div>
 
-{% if formResponses is empty %}
-    <p>Aucune réponse pour le moment.</p>
-{% else %}
-<div class="col-sm-6">
-    <h4 class="mb-3 mt-3 font-weight-normal">Formulaire reçu le {{ date|date('d.m.Y') }}</h4>
-</div>
-    <ul>
-        {% for formResponse in formResponses %}
-            <li>
-                {% if formResponse.FormQuestion %}
-                    <p>{{ formResponse.FormQuestion.questionText }} : {{ formResponse.FormTextAnswer }}</p>
-                {% endif %}
-            </li>
-        {% endfor %}
-    </ul>
-    <div class="col-sm-6">
-        <a class="btn btn-info" href="{{ path('app_user_download_responses', {'formTemplateId': formTemplate.id, 'date': date }) }}">Télécharger en pdf</a>
+<h4 class="mb-3 mt-3 ml-5 font-weight-normal">Réponse au formulaire "{{ formTemplate.title }}"</h4>
+
+<div class="row">
+    <!-- Première colonne -->
+    <div class="col-sm-5 ml-5">
+        
+        {% if formResponses is empty %}
+            <p>Aucune réponse pour le moment.</p>
+        {% else %}
+            <h4 class="mb-3 mt-3 font-weight-normal">Formulaire reçu le {{ date|date('d/m/Y') }} :</h4>
+            <ul>
+                {% for formResponse in formResponses %}
+                    <li>
+                        {% if formResponse.FormQuestion %}
+                            <p>{{ formResponse.FormQuestion.questionText }} : {{ formResponse.FormTextAnswer }}</p>
+                        {% endif %}
+                    </li>
+                {% endfor %}
+            </ul>
+            <a class="btn btn-info" href="{{ path('app_user_download_responses', {'formTemplateId': formTemplate.id, 'date': date }) }}">Télécharger en pdf</a>
+        {% endif %}
     </div>
 
+    <!-- Deuxième colonne -->
+    <div class="col-sm-6">
+  
+                    <h4 class="mb-3 mt-3 font-weight-normal">Suivi interne du formulaire</h4>
+                    <div class="timeline-date mt-3"> {{ date|date('d.m.Y') }} <br> Réception de la demande</div>
+                    <p>Mail envoyé au négociateur pour le prévenir d'une nouvelle demande</p>
+                    <p>Mail envoyé au client pour le remercier de ses réponses (lui proposer de créer un compte ?)</p>
 
+                    <div class="timeline-date mt-3"> {{ date|date('d.m.Y') }} <br> En cour de traitement </div>
 
-    <div class="timeline">
-        <div class="timeline-item">
-            <div class="timeline-content">
-                <h4>Suivi de réponse au formulaire</h4>
-                <div class="timeline-date"> Date de réception : {{ date|date('d.m.Y') }}</div>
-                <div class="timeline-date"> Date de réponse : {{ date|date('d.m.Y') }}</div>
-                <div class="timeline-date"> Date de relance : {{ date|date('d.m.Y') }}</div>
+                    {% set responseDate = date|date_modify('+' ~ 48 ~ 'hours') %}
+                    {% set responseDateFormatted = responseDate|date('d.m.Y') %}
+                    <div class="timeline-date mt-3"> {{ responseDateFormatted }} <br> Réponse envoyée</div>
 
-                <div class="col-sm-6">
-                    <a class="btn btn-info" href="#">Cloturer formulaire</a>
-                </div>
-            </div>
-        </div>
+                    {% set relanceDate = responseDate|date_modify('+' ~ 72 ~ 'hours') %}
+                    {% set relanceDateFormatted = relanceDate|date('d.m.Y') %}
+                    <div class="timeline-date mt-3"> {{ relanceDateFormatted }} <br> Relance faite</div>
 
-
-
-{% endif %}
+                    <form id="closeForm" action="{{ path('app_user_close_form', {'formTemplateId': formTemplate.id, 'date': date}) }}" method="post" onsubmit="return confirmCloseForm()">
+                        <button type="submit" class="btn btn-info mt-3">Clôturer suivi</button>
+                    </form>
+                    
+                    <script>
+                        function confirmCloseForm() {
+                            if (confirm("Les réponses seront définitivement supprimées de la base de données. Êtes-vous certain de vouloir supprimer ces réponses ? Vous pouvez télécharger les réponses avant de clôturer ce formulaire pour garder une trace.")) {
+                                return true;
+                            } else {
+                                return false;
+                            }
+                        }
+                    </script>
+                    
+    </div>
+</div>
 {% endblock %}

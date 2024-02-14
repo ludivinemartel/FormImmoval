@@ -13,31 +13,56 @@ use Symfony\Component\Routing\Annotation\Route;
 use App\Entity\FormTemplate;
 use App\Controller\QuestionnaireController;
 use App\Entity\FormReponse;
+use App\Service\CalendarGenerator;
+
+
 
 #[Route('/user')]
 class UserController extends AbstractController
 {
 
     private EntityManagerInterface $entityManager;
+    private $calendarGenerator;
+
  
 
-    public function __construct(EntityManagerInterface $entityManager)
+    public function __construct(EntityManagerInterface $entityManager, CalendarGenerator $calendarGenerator)
     {
         $this->entityManager = $entityManager;
+        $this->calendarGenerator = $calendarGenerator;
     }
 
-    #[Route('/dashboard', name: 'user_dashboard')]
     public function dashboard(): Response
     {
         $user = $this->getUser();
-        // Récupérer tous les modèles de formulaires pour lesquels l'utilisateur a accès
+        $calendar = $this->calendarGenerator->generateCalendar();
+        
+        // Récupérer tous les modèles de formulaires disponibles
         $formTemplates = $this->entityManager->getRepository(FormTemplate::class)->findAll();
-
+        
+        // Initialiser un tableau pour stocker les 2 derniers prospects pour chaque formulaire
+        $latestProspects = [];
+        
+        // Récupérer les 4 premières réponses pour chaque formulaire
+        foreach ($formTemplates as $formTemplate) {
+            $responses = $this->entityManager->getRepository(FormReponse::class)->findBy(
+                ['FormTemplateTitle' => $formTemplate, 'user' => $user],
+                ['Date' => 'DESC'],
+                4 // Limiter le nombre de résultats à 4
+            );
+    
+            // Garder seulement les 2 derniers prospects
+            $latestProspects[$formTemplate->getId()] = array_slice($responses, 0, 4);
+        }
+    
         return $this->render('user/dashboard.html.twig', [
             'user' => $user,
             'formTemplates' => $formTemplates,
+            'latestProspects' => $latestProspects,
+            'calendar' => $calendar,
         ]);
     }
+    
 
     #[Route('/add-form-template/{userId}/{formTemplateId}', name: 'app_user_add_form_template', methods: ['GET'])]
     public function addFormTemplateToUser(EntityManagerInterface $entityManager, $userId, $formTemplateId): Response
@@ -98,6 +123,7 @@ public function showAnswers(int $formTemplateId): Response
 public function showResponses(int $formTemplateId, string $date): Response
 {
     $formTemplate = $this->entityManager->getRepository(FormTemplate::class)->find($formTemplateId);
+  
 
     // Récupérer les réponses pour le formulaire et la date spécifiques
     $formResponses = $this->entityManager->getRepository(FormReponse::class)->findBy([
@@ -109,9 +135,9 @@ public function showResponses(int $formTemplateId, string $date): Response
         'formTemplate' => $formTemplate,
         'formResponses' => $formResponses,
         'date' => $date,
+ 
     ]);
 }
-
 
     #[Route('/', name: 'app_user_index', methods: ['GET'])]
     public function index(UserRepository $userRepository): Response
