@@ -3,20 +3,19 @@
 {% block title %}Liste des réponses au formulaire {{ formTemplate.title }}{% endblock %}
 
 {% block body %}
-    <h1 class="mb-3 mt-3 font-weight-normal">Liste des réponses au formulaire "{{ formTemplate.title }}"</h1>
+    <h3 class="mt-5 ml-5 mb-5">Réponses au formulaire "{{ formTemplate.title }}"</h3>
 
     {% if formResponses is empty %}
-        <p>Aucune réponse pour le moment.</p>
+        <p class="mt-5 ml-5 mb-5">Aucune réponse pour le moment.</p>
     {% else %}
-        <ul>
+        
             {% for date, responses in groupedResponses %}
-                {# Convertir la date au format français DD-MM-YYYY #}
                 {% set formattedDate = date|date('d-m-Y') %}
-                <li>
-                    <h3>Réponse {{ loop.index }} | {{ formattedDate }}</h3>
-                    <a class="btn btn-info" href="{{ path('app_user_show_responses', {'formTemplateId': formTemplate.id, 'date': date}) }}">Voir</a>
-                </li>
-            {% endfor %}
-        </ul>
+                    <h5 class="mt-4 ml-5 mb-4">Réponse {{ loop.index }} | {{ formattedDate }} | 
+                    <a class="btn btn-info" href="{{ path('app_user_show_responses', {'formTemplateId': formTemplate.id, 'date': date}) }}">
+                        Voir
+                    </a>
+                </h5>
+                    {% endfor %}
     {% endif %}
 {% endblock %}

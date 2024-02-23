@@ -21,37 +21,90 @@
             {% endif %}
         {% endif %}
     {% else %}
-        <h2 class="vstack gap-2 col-md-9 mx-auto m-5 display-6">
-            Bienvenue sur votre dashboard négociateur {{ app.user.Forname }} !
-        </h2>
-        <div class="col-sm-6">
+<h2 class="mt-5 ml-5 mb-5">
+    Bienvenue sur votre dashboard négociateur {{ app.user.Forname }}
+</h2>
+
+<div class="row">
+
+    <div class="col-6">
+        <div class="ml-5">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Formulaires disponibles</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for formTemplate in formTemplates %}
+                        <tr>
+                            <td >{{ formTemplate.title }}</td>
+                                <td>
+                                    <br>
+                                    <a class="btn btn-info ml-3" href="{{ path('app_user_show_form', {'userId': app.user.id, 'formTemplateId': formTemplate.id}) }}">Voir le formulaire</a>
+                                    <br>
+                                    <a class="btn btn-info ml-3 mt-2" href="{{ path('app_user_show_answers', {'formTemplateId': formTemplate.id}) }}">Afficher les réponses</a>
+                                </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="col-6">
+        <h4>Calendrier des relances</h4>
         <table>
             <thead>
                 <tr>
-                    <th>Titre du formulaire</th>
-                    <th>Action</th>
+                    <th>Lun</th>
+                    <th>Mar</th>
+                    <th>Mer</th>
+                    <th>Jeu</th>
+                    <th>Ven</th>
+                    <th>Sam</th>
+                    <th>Dim</th>
                 </tr>
             </thead>
             <tbody>
-                {% for formTemplate in formTemplates %}
+                {% for week in calendar %}
                     <tr>
-                        <td>{{ formTemplate.title }}</td>
-                        <td>
-                            <a class="btn btn-info" href="#">Ajouter</a>
-                        </td>
-                        <td>
-                            <a class="btn btn-info" href="{{ path('app_user_show_form', {'userId': app.user.id, 'formTemplateId': formTemplate.id}) }}">Voir le formulaire</a>
-                        </td>
-
-                        <td>
-                            <a class="btn btn-info" href="{{ path('app_user_show_answers', {'formTemplateId': formTemplate.id}) }}">Voir les réponses au formulaire</a>
-                        </td>                        
+                        {% for day in week %}
+                            <td>{{ day ?: '' }}</td>
+                        {% endfor %}
                     </tr>
                 {% endfor %}
             </tbody>
         </table>
     </div>
 
+   
+</div>
+<div class="ml-5">
+        <h3 class="mt-5">Liste des derniers prospects :</h3>
+        <table> 
+            <tbody>
+                {% for formTemplate in formTemplates %}
+                    {% set responses = latestProspects[formTemplate.id] %}
+                    {% if responses is not empty %}
+                        <tr>
+                            <tr rowspan="{{ responses|length }}">{{ formTemplate.title }}</tr> |
+                            <tr rowspan="{{ responses|length }}">{{ responses.0.date|date('d/m/Y') }}</tr> |
+                            {% for response in responses %}
+                            <tr>
+                                {{ response.getFormTextAnswer()}} |
+                            </tr>
+                        {% endfor %}
+                            <tr rowspan="{{ responses|length }}">
+                                <a class="btn btn-info mt-2 ml-2" href="{{ path('app_user_show_responses', {'formTemplateId': formTemplate.id, 'date': responses.0.date|date('Y-m-d')}) }}">Afficher détail</a> <br>
+                            </tr>
+                        </tr>
+                    {% else %}
+                    {% endif %}
+                {% endfor %}
+            </tbody>
+        </table> 
+</div>
+
     {% endif %}
 {% endblock %}
-

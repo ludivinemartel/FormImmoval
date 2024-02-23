@@ -1,7 +1,5 @@
 <?php
 
-// src/Security/UserProvider.php
-
 namespace App\Security;
 
 use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
