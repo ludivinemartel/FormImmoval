@@ -36,3 +36,8 @@ app_user_download_responses:
     methods: ['GET']
     requirements:
         formTemplateId: '\d+'
+
+user_show_responses_submit:
+    path: /user/user/show-responses/{id}/{date}
+    controller: App\Controller\UserController::showResponses
+    methods: ['POST']

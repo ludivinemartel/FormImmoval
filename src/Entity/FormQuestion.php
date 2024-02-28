@@ -21,6 +21,12 @@ class FormQuestion
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $QuestionType = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?bool $checkboxField = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?array $checkboxText = null;
     
     public function getId(): ?int
     {
@@ -59,6 +65,30 @@ class FormQuestion
     public function setQuestionType(?string $QuestionType): static
     {
         $this->QuestionType = $QuestionType;
+
+        return $this;
+    }
+
+    public function isCheckboxField(): ?bool
+    {
+        return $this->checkboxField;
+    }
+
+    public function setCheckboxField(?bool $checkboxField): static
+    {
+        $this->checkboxField = $checkboxField;
+
+        return $this;
+    }
+
+    public function getCheckboxText(): ?array
+    {
+        return $this->checkboxText;
+    }
+
+    public function setCheckboxText(?array $checkboxText): static
+    {
+        $this->checkboxText = $checkboxText;
 
         return $this;
     }
