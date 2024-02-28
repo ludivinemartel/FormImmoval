@@ -1,13 +1,132 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}Immoval{% endblock %}</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚫️</text></svg>">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+    {% block stylesheets %}
+        {{ encore_entry_link_tags('app') }}
+    {% endblock %}
+</head>
+
+<body>
 {% block content %}
-    <h1 class="mb-3 mt-3 font-weight-normal">{{ formTemplate.title }}</h1>
+<div class="container">
+    <h1 class="d-flex justify-content-center mt-3 font-weight-normal">{{ formTemplate.title }}</h1>
 
-    <form method="post" action="{{ path('submit', {'formTemplateId': formTemplate.id}) }}">
+    <!-- Barre de progression -->
+    <div class="progress mt-3">
+        <div class="progress-bar bg-info" role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+    </div>
+
+    <form method="post" action="{{ path('submit', {'formTemplateId': formTemplate.id}) }}" class="mx-auto">
+        {% set questionCount = 0 %}
         {% for question in questions %}
-        <label>{{ question.questionText }}</label>
-        <input type="text" name="form_responses[{{ question.id }}]">
-        <input type="hidden" name="formQuestionId[{{ question.id }}]" value="{{ question.id }}">
-    {% endfor %}
-
-        <button type="submit" class="btn btn-info">Soumettre</button>
+            {% if questionCount % 4 == 0 %}
+                {% if questionCount != 0 %}
+                    <button type="button" class="btn btn-secondary mt-3 prev-section" data-section-id="{{ questionCount / 4 }}">Retour</button>
+                    <button type="button" class="btn btn-info mt-3 next-section">Suivant</button>
+                    </div><!-- fermer la section précédente -->
+                {% endif %}
+                <div class="section" id="section{{ questionCount / 4 }}">
+            {% endif %}
+            <div class="form-floating">
+                <label>{{ question.questionText }}</label> <br>
+                <input class="form-control" type="text" name="form_responses[{{ question.id }}]"> <br>
+                <input type="hidden" name="formQuestionId[{{ question.id }}]" value="{{ question.id }}">
+            </div>
+            {% set questionCount = questionCount + 1 %}
+        {% endfor %}
+        <button type="button" class="btn btn-secondary mt-3 prev-section d-none" data-section-id="{{ questionCount / 4 }}">Retour</button>
+        <button type="submit" class="btn btn-info mt-3 d-none">Soumettre</button>
     </form>
+</div>
 {% endblock %}
+
+{% block javascripts %}
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const sections = document.querySelectorAll('.section');
+            const nextButtons = document.querySelectorAll('.next-section');
+            const prevButtons = document.querySelectorAll('.prev-section');
+            const submitButton = document.querySelector('button[type="submit"]');
+            let firstReturnButton;
+            const progressBar = document.querySelector('.progress-bar');
+            const progressBarWidth = 100 / sections.length;
+
+            // Masquer toutes les sections sauf la première
+            for (let i = 1; i < sections.length; i++) {
+                sections[i].classList.add('d-none');
+            }
+
+            // Mettre à jour la barre de progression
+            function updateProgressBar(currentIndex) {
+                const progressWidth = progressBarWidth * (currentIndex + 1);
+                progressBar.style.width = progressWidth + '%';
+                progressBar.setAttribute('aria-valuenow', progressWidth);
+            }
+
+            // Ajouter un écouteur d'événement à chaque bouton "Suivant"
+            nextButtons.forEach((button, index) => {
+                button.addEventListener('click', function() {
+                    const currentSection = sections[index];
+                    const nextSection = sections[index + 1];
+
+                    // Masquer la section actuelle
+                    currentSection.classList.add('d-none');
+
+                    // Afficher la section suivante
+                    if (nextSection) {
+                        nextSection.classList.remove('d-none');
+                    }
+
+                    // Afficher le bouton Soumettre sur la dernière section
+                    if (!nextSection.nextElementSibling) {
+                        submitButton.classList.remove('d-none');
+                    }
+
+                    // Activer le bouton "Retour" de la section suivante
+                    prevButtons[index + 1].classList.remove('d-none');
+
+                    // Mettre à jour la barre de progression
+                    updateProgressBar(index + 1);
+                });
+            });
+
+            // Ajouter un écouteur d'événement à chaque bouton "Retour"
+            prevButtons.forEach((button, index) => {
+                button.addEventListener('click', function() {
+                    const currentSection = sections[index];
+                    const prevSection = sections[index - 1];
+
+                    // Masquer la section actuelle
+                    currentSection.classList.add('d-none');
+
+                    // Afficher la section précédente
+                    if (prevSection) {
+                        prevSection.classList.remove('d-none');
+                    }
+
+                    // Désactiver le bouton "Retour" actuel
+                    button.disabled = true;
+
+                    // Activer le premier bouton "Retour" si nécessaire
+                    if (index !== 0) {
+                        firstReturnButton.classList.remove('d-none');
+                    }
+
+                    // Mettre à jour la barre de progression
+                    updateProgressBar(index - 1);
+                });
+            });
+
+            // Désactiver le premier bouton "Retour"
+            prevButtons[0].classList.add('d-none');
+            firstReturnButton = prevButtons[0];
+        });
+    </script>
+{% endblock %}
+</body>
+</html>

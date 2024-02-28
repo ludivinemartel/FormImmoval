@@ -12,14 +12,20 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RedirectResponse;
+use App\Service\EmailService;
+use Psr\Log\LoggerInterface;
 
 class QuestionnaireController extends AbstractController
 {
     private EntityManagerInterface $entityManager;
+    private EmailService $emailService;
+    private LoggerInterface $logger;
 
-    public function __construct(EntityManagerInterface $entityManager)
+    public function __construct(EntityManagerInterface $entityManager, EmailService $emailService, LoggerInterface $logger)
     {
         $this->entityManager = $entityManager;
+        $this->emailService = $emailService;
+        $this->logger = $logger;
     }
 
     #[Route('/questionnaire/{formTemplateId}', name: 'questionnaire_show')]
@@ -38,9 +44,8 @@ class QuestionnaireController extends AbstractController
             'questions' => $questions,
         ]);
     }
-
     #[Route('/submit/{formTemplateId}', name: 'submit', methods: ['POST'])]
-    public function FormSubmission(Request $request, int $formTemplateId): Response
+    public function FormSubmission(Request $request, int $formTemplateId, EmailService $emailService): Response
     {
         try {
             // Récupérer les données brutes du formulaire
@@ -89,10 +94,29 @@ class QuestionnaireController extends AbstractController
     
             // Flush les changements dans la base de données
             $this->entityManager->flush();
+    
+         // Récupérer l'utilisateur connecté
+            $user = $this->getUser();
+            if (!$user instanceof User) {
+            throw $this->createAccessDeniedException('Utilisateur non connecté');
+            }
+            
+           // Envoi de l'e-mail de notification au négociateur
+           $userEmail = $user->getEmail();
+
+           // Vérifier si l'adresse e-mail de l'utilisateur est valide et non vide
+            if (!$userEmail) {
+            throw new \Exception('L\'adresse e-mail de l\'utilisateur est vide');
+            }
+           $emailService->sendEmail($userEmail);
+    
+            // Afficher l'e-mail de l'utilisateur dans les journaux ou dans la sortie de l'application
+            $this->logger->info('Adresse e-mail de l\'utilisateur : ' . $userEmail);
 
             // Passer le nom et le prénom à la vue de la page de remerciement
             return $this->render('form/thank.html.twig', [
-               'user'=> $user
+               'user'=> $user,
+
             ]);
         } catch (\Throwable $e) {
             // Gérer l'erreur
@@ -100,9 +124,8 @@ class QuestionnaireController extends AbstractController
         }
     }
 
-
     #[Route('/user/close-form/{formTemplateId}/{date}', name: 'app_user_close_form', methods: ['POST'])]
-    public function closeForm(int $formTemplateId, string $date): RedirectResponse
+    public function DeleteForm(int $formTemplateId, string $date): RedirectResponse
     {
         // Récupérer le modèle de formulaire et l'utilisateur depuis la base de données
         $formTemplate = $this->entityManager->getRepository(FormTemplate::class)->find($formTemplateId);
@@ -132,4 +155,5 @@ class QuestionnaireController extends AbstractController
         return $this->redirectToRoute('user_dashboard');
 
     }
+
 }    

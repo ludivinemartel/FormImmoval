@@ -9,56 +9,87 @@
 <div class="row">
     <!-- Première colonne -->
     <div class="col-sm-5 ml-5">
-        
+
         {% if formResponses is empty %}
-            <p>Aucune réponse pour le moment.</p>
+        <p>Aucune réponse pour le moment.</p>
         {% else %}
-            <h4 class="mb-3 mt-3 font-weight-normal">Formulaire reçu le {{ date|date('d/m/Y') }} :</h4>
-            <ul>
-                {% for formResponse in formResponses %}
-                    <li>
-                        {% if formResponse.FormQuestion %}
-                            <p>{{ formResponse.FormQuestion.questionText }} : {{ formResponse.FormTextAnswer }}</p>
-                        {% endif %}
-                    </li>
-                {% endfor %}
-            </ul>
-            <a class="btn btn-info" href="{{ path('app_user_download_responses', {'formTemplateId': formTemplate.id, 'date': date }) }}">Télécharger en pdf</a>
+        <h4 class="mb-3 mt-3 font-weight-normal">Formulaire reçu le {{ date|date('d/m/Y') }} :</h4>
+        <ul>
+            {% for formResponse in formResponses %}
+            <li>
+                {% if formResponse.FormQuestion %}
+                <p>{{ formResponse.FormQuestion.questionText }} : {{ formResponse.FormTextAnswer }}</p>
+                {% endif %}
+            </li>
+            {% endfor %}
+        </ul>
+        <a class="btn btn-info"
+            href="{{ path('app_user_download_responses', {'formTemplateId': formTemplate.id, 'date': date }) }}">Télécharger
+            en pdf</a>
         {% endif %}
     </div>
 
     <!-- Deuxième colonne -->
-    <div class="col-sm-6">
-  
-                    <h4 class="mb-3 mt-3 font-weight-normal">Suivi interne du formulaire</h4>
-                    <div class="timeline-date mt-3"> {{ date|date('d.m.Y') }} <br> Réception de la demande</div>
-                    <p>Mail envoyé au négociateur pour le prévenir d'une nouvelle demande</p>
-                    <p>Mail envoyé au client pour le remercier de ses réponses (lui proposer de créer un compte ?)</p>
+    <div class="col-sm-3">
 
-                    <div class="timeline-date mt-3"> {{ date|date('d.m.Y') }} <br> En cour de traitement </div>
+        <h4 class="mb-3 mt-3 font-weight-normal">Suivi interne du formulaire</h4>
+        <div class="timeline-date mt-3"> {{ date|date('d.m.Y') }} <br> Réception de la demande</div>
 
-                    {% set responseDate = date|date_modify('+' ~ 48 ~ 'hours') %}
-                    {% set responseDateFormatted = responseDate|date('d.m.Y') %}
-                    <div class="timeline-date mt-3"> {{ responseDateFormatted }} <br> Réponse envoyée</div>
+        <div class="timeline-date mt-3"> {{ date|date('d.m.Y') }} <br> En cour de traitement </div>
 
-                    {% set relanceDate = responseDate|date_modify('+' ~ 72 ~ 'hours') %}
-                    {% set relanceDateFormatted = relanceDate|date('d.m.Y') %}
-                    <div class="timeline-date mt-3"> {{ relanceDateFormatted }} <br> Relance faite</div>
+        {% set responseDate = date|date_modify('+' ~ 48 ~ 'hours') %}
+        {% set responseDateFormatted = responseDate|date('d.m.Y') %}
+        <div class="timeline-date mt-3"> {{ responseDateFormatted }} <br> Réponse envoyée</div>
 
-                    <form id="closeForm" action="{{ path('app_user_close_form', {'formTemplateId': formTemplate.id, 'date': date}) }}" method="post" onsubmit="return confirmCloseForm()">
-                        <button type="submit" class="btn btn-info mt-3">Clôturer suivi</button>
-                    </form>
-                    
-                    <script>
-                        function confirmCloseForm() {
-                            if (confirm("Les réponses seront définitivement supprimées de la base de données. Êtes-vous certain de vouloir supprimer ces réponses ? Vous pouvez télécharger les réponses avant de clôturer ce formulaire pour garder une trace.")) {
-                                return true;
-                            } else {
-                                return false;
-                            }
-                        }
-                    </script>
-                    
+        {% set relanceDate = responseDate|date_modify('+' ~ 72 ~ 'hours') %}
+        {% set relanceDateFormatted = relanceDate|date('d.m.Y') %}
+        <div class="timeline-date mt-3"> {{ relanceDateFormatted }} <br> Relance faite</div>
+
+        <form id="closeForm"
+            action="{{ path('app_user_close_form', {'formTemplateId': formTemplate.id, 'date': date}) }}" method="post"
+            onsubmit="return confirmCloseForm()">
+            <button type="submit" class="btn btn-info mt-3">Clôturer suivi</button>
+        </form>
+
     </div>
+    
+<!-- Troisième colonne -->
+<div class="col-sm-3 card bg-warning">
+    <div class="card-header bg-warning">MES NOTES</div>
+    {# <h4 class="mb-3 mt-3 font-weight-normal"></h4> #}
+    <!-- Champ de texte pour les notes -->
+    <textarea id="noteField_{{ formTemplate.id }}" class="form-control bg-warning border-0" rows="13" cols="40"></textarea>
+    <!-- Pas besoin du bouton Enregistrer -->
 </div>
+
+<script>
+    // Récupérer le champ de texte pour les notes
+    const noteField = document.getElementById('noteField_{{ formTemplate.id }}');
+
+    // Vérifier s'il y a des notes déjà stockées localement pour cette fiche
+    const storedNotes = localStorage.getItem('userNotes_{{ formTemplate.id }}');
+
+    // Si des notes sont déjà stockées, les afficher dans le champ de texte
+    if (storedNotes) {
+        noteField.value = storedNotes;
+    }
+
+    // Écouter les événements de changement dans le champ de texte
+    noteField.addEventListener('input', function () {
+        // Récupérer le contenu des notes
+        const notes = noteField.value;
+
+        // Stocker les notes localement dans le navigateur pour cette fiche
+        localStorage.setItem('userNotes_{{ formTemplate.id }}', notes);
+    });
+
+    function confirmCloseForm() {
+        if (confirm("Les réponses seront définitivement supprimées de la base de données. Êtes-vous certain de vouloir supprimer ces réponses ? Vous pouvez télécharger les réponses avant de clôturer ce formulaire pour garder une trace.")) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+</script>
+
 {% endblock %}
