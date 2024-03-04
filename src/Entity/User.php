@@ -61,7 +61,7 @@ class User implements PasswordAuthenticatedUserInterface, UserInterface
     #[ORM\OneToOne(mappedBy: 'Users', cascade: ['persist', 'remove'])]
     private ?UsersFormTemplate $usersFormTemplate = null;
 
-    #[ORM\OneToMany(mappedBy: 'user', targetEntity: FormReponse::class)]
+    #[ORM\OneToMany(mappedBy: 'user', targetEntity: FormResponse::class)]
     private Collection $FormResponse;
 
     public function __construct()
@@ -217,14 +217,14 @@ class User implements PasswordAuthenticatedUserInterface, UserInterface
     }
 
     /**
-     * @return Collection<int, FormReponse>
+     * @return Collection<int, FormResponse>
      */
     public function getFormResponse(): Collection
     {
         return $this->FormResponse;
     }
 
-    public function addFormResponse(FormReponse $formResponse): static
+    public function addFormResponse(FormResponse $formResponse): static
     {
         if (!$this->FormResponse->contains($formResponse)) {
             $this->FormResponse->add($formResponse);
@@ -234,7 +234,7 @@ class User implements PasswordAuthenticatedUserInterface, UserInterface
         return $this;
     }
 
-    public function removeFormResponse(FormReponse $formResponse): static
+    public function removeFormResponse(FormResponse $formResponse): static
     {
         if ($this->FormResponse->removeElement($formResponse)) {
             // set the owning side to null (unless already changed)

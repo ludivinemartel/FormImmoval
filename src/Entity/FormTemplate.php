@@ -21,6 +21,12 @@ class FormTemplate
     #[ORM\OneToMany(mappedBy: 'formTemplate', targetEntity: FormQuestion::class, cascade: ['persist', 'remove'])]
     private Collection $formQuestions;
 
+    #[ORM\Column(length: 2000, nullable: true)]
+    private ?string $thankYouMessage = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $slug = null;
+
     public function __construct()
     {
         $this->formQuestions = new ArrayCollection();
@@ -73,4 +79,27 @@ class FormTemplate
         return $this;
     }
 
+    public function getThankYouMessage(): ?string
+    {
+        return $this->thankYouMessage;
+    }
+
+    public function setThankYouMessage(?string $thankYouMessage): static
+    {
+        $this->thankYouMessage = $thankYouMessage;
+
+        return $this;
+    }
+
+    public function getSlug(): ?string
+    {
+        return $this->slug;
+    }
+
+    public function setSlug(?string $slug): static
+    {
+        $this->slug = $slug;
+
+        return $this;
+    }
 }

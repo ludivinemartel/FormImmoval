@@ -10,7 +10,7 @@ use Doctrine\Migrations\AbstractMigration;
 /**
  * Auto-generated Migration: Please modify to your needs!
  */
-final class Version20240228102015 extends AbstractMigration
+final class Version20240229094345 extends AbstractMigration
 {
     public function getDescription(): string
     {
@@ -20,14 +20,12 @@ final class Version20240228102015 extends AbstractMigration
     public function up(Schema $schema): void
     {
         // this up() migration is auto-generated, please modify it to your needs
-        $this->addSql('ALTER TABLE form_question ADD checkbox_field TINYINT(1) DEFAULT NULL');
-        $this->addSql('ALTER TABLE form_reponse DROP notetaking');
+        $this->addSql('ALTER TABLE form_question ADD options LONGTEXT DEFAULT NULL COMMENT \'(DC2Type:array)\'');
     }
 
     public function down(Schema $schema): void
     {
         // this down() migration is auto-generated, please modify it to your needs
-        $this->addSql('ALTER TABLE form_question DROP checkbox_field');
-        $this->addSql('ALTER TABLE form_reponse ADD notetaking VARCHAR(2000) DEFAULT NULL');
+        $this->addSql('ALTER TABLE form_question DROP options');
     }
 }

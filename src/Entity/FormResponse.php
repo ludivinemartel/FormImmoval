@@ -2,12 +2,12 @@
 
 namespace App\Entity;
 
-use App\Repository\FormReponseRepository;
+use App\Repository\FormResponseRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity(repositoryClass: FormReponseRepository::class)]
-class FormReponse
+#[ORM\Entity(repositoryClass: FormResponseRepository::class)]
+class FormResponse
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]

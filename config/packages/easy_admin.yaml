@@ -1,12 +1,23 @@
-# config/packages/easy_admin.yaml
 easy_admin:
     entities:
-        - src\Entity\FormTemplate
-    FormTemplate:
-            class: src\Entity\FormTemplate
-            list:
-                actions:
-                    - { name: 'custom_associate_action', label: 'Ajouter à ma liste' }
-
+        FormTemplate:
+            class: App\Entity\FormTemplate
+            form:
+                fields:
+                    - { property: 'title', label: 'Titre' }
+                    - { property: 'formQuestions', label: 'Questions', type: 'collection', type_options: { entry_type: App\Form\FormQuestionType::class, allow_add: true, allow_delete: true, prototype: true } }
+                    - { property: 'formQuestions.questionType', label: 'Type de question', type: 'choice', type_options: { 
+                            choices: { 'Texte': 'text', 'Select': 'select' }, 
+                            required: true 
+                        } 
+                    }
+                    - { property: 'formQuestions.options', label: 'Options', type: 'text', type_options: { 
+                            attr: { class: 'options-field hidden' } 
+                        } 
+                    }
+    design:
+        assets:
+            js:
+                - 'js/form_question.js'
     dashboard:
         - { entity: 'TemplateForm', label: 'Liste des questionnaires disponibles', icon: 'file' }

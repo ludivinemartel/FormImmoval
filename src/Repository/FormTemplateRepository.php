@@ -21,28 +21,24 @@ class FormTemplateRepository extends ServiceEntityRepository
         parent::__construct($registry, FormTemplate::class);
     }
 
-//    /**
-//     * @return FormTemplate[] Returns an array of FormTemplate objects
-//     */
-//    public function findByExampleField($value): array
-//    {
-//        return $this->createQueryBuilder('f')
-//            ->andWhere('f.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->orderBy('f.id', 'ASC')
-//            ->setMaxResults(10)
-//            ->getQuery()
-//            ->getResult()
-//        ;
-//    }
+    public function findRequiredQuestionIds(int $formTemplateId): array
+    {
+        $requiredQuestionIds = [];
 
-//    public function findOneBySomeField($value): ?FormTemplate
-//    {
-//        return $this->createQueryBuilder('f')
-//            ->andWhere('f.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->getQuery()
-//            ->getOneOrNullResult()
-//        ;
-//    }
+        // Récupérez le formulaire associé aux réponses
+        $formTemplate = $this->find($formTemplateId);
+
+        // Vérifiez si le formulaire existe
+        if ($formTemplate) {
+            // Parcourez les questions associées à ce modèle de formulaire
+            foreach ($formTemplate->getFormQuestions() as $question) {
+                // Vérifiez si la question est marquée comme obligatoire
+                if ($question->isIsRequired()) {
+                    // Si oui, ajoutez l'identifiant de la question à la liste des questions obligatoires
+                    $requiredQuestionIds[] = $question->getId();
+                }
+            }
+        }
+        return $requiredQuestionIds;
+    }
 }

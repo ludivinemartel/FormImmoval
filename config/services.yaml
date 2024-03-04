@@ -40,3 +40,6 @@ services:
     App\Validator\Constraints\ImmovalEmailValidator:
         tags:
             - { name: 'validator.constraint_validator', alias: 'app.validator.immoval_email' }
+            
+    App\Entity\FormTemplate:
+        arguments: ['@slugger']

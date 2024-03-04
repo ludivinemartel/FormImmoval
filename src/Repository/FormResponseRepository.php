@@ -2,7 +2,7 @@
 
 namespace App\Repository;
 
-use App\Entity\FormReponse;
+use App\Entity\FormResponse;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -14,11 +14,11 @@ use Doctrine\Persistence\ManagerRegistry;
  * @method FormReponse[]    findAll()
  * @method FormReponse[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class FormReponseRepository extends ServiceEntityRepository
+class FormResponseRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
-        parent::__construct($registry, FormReponse::class);
+        parent::__construct($registry, FormResponse::class);
     }
 
 //    /**

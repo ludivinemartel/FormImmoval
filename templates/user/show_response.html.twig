@@ -52,22 +52,22 @@
         </form>
 
     </div>
-    
+
 <!-- Troisième colonne -->
 <div class="col-sm-3 card bg-warning">
     <div class="card-header bg-warning">MES NOTES</div>
     {# <h4 class="mb-3 mt-3 font-weight-normal"></h4> #}
     <!-- Champ de texte pour les notes -->
-    <textarea id="noteField_{{ formTemplate.id }}" class="form-control bg-warning border-0" rows="13" cols="40"></textarea>
+    <textarea id="noteField_{{ formTemplate.id }}_{{ app.user.id }}" class="form-control bg-warning border-0" rows="13" cols="40"></textarea>
     <!-- Pas besoin du bouton Enregistrer -->
 </div>
 
 <script>
     // Récupérer le champ de texte pour les notes
-    const noteField = document.getElementById('noteField_{{ formTemplate.id }}');
+    const noteField = document.getElementById('noteField_{{ formTemplate.id }}_{{ app.user.id }}');
 
     // Vérifier s'il y a des notes déjà stockées localement pour cette fiche
-    const storedNotes = localStorage.getItem('userNotes_{{ formTemplate.id }}');
+    const storedNotes = localStorage.getItem('userNotes_{{ formTemplate.id }}_{{ app.user.id }}');
 
     // Si des notes sont déjà stockées, les afficher dans le champ de texte
     if (storedNotes) {
@@ -79,8 +79,8 @@
         // Récupérer le contenu des notes
         const notes = noteField.value;
 
-        // Stocker les notes localement dans le navigateur pour cette fiche
-        localStorage.setItem('userNotes_{{ formTemplate.id }}', notes);
+        // Stocker les notes localement dans le navigateur pour cette fiche avec l'identifiant de l'utilisateur comme clé
+        localStorage.setItem('userNotes_{{ formTemplate.id }}_{{ app.user.id }}', notes);
     });
 
     function confirmCloseForm() {
@@ -91,5 +91,6 @@
         }
     }
 </script>
+
 
 {% endblock %}
