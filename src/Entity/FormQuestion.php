@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Repository\FormQuestionRepository;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: FormQuestionRepository::class)]
@@ -19,14 +20,18 @@ class FormQuestion
     #[ORM\ManyToOne(inversedBy: 'formQuestions')]
     private ?FormTemplate $formTemplate = null;
 
+    #[ORM\Column(type: Types::ARRAY, nullable: true)]
+    private ?array $selectOptions = null;
+
     #[ORM\Column(length: 255, nullable: true)]
-    private ?string $QuestionType = null;
+    private ?string $questionType = null;
+
+    #[ORM\Column(type: Types::ARRAY, nullable: true)]
+    private ?array $options = null;
 
     #[ORM\Column(nullable: true)]
-    private ?bool $checkboxField = null;
+    private ?bool $isRequired = null;
 
-    #[ORM\Column(nullable: true)]
-    private ?array $checkboxText = null;
     
     public function getId(): ?int
     {
@@ -45,6 +50,11 @@ class FormQuestion
         return $this;
     }
 
+    public function __toString()
+    {
+        return $this->getQuestionText();
+    }
+
     public function getFormTemplate(): ?FormTemplate
     {
         return $this->formTemplate;
@@ -57,38 +67,50 @@ class FormQuestion
         return $this;
     }
 
+    public function getSelectOptions(): ?array
+    {
+        return $this->selectOptions;
+    }
+
+    public function setSelectOptions(?array $selectOptions): static
+    {
+        $this->selectOptions = $selectOptions;
+
+        return $this;
+    }
+
     public function getQuestionType(): ?string
     {
-        return $this->QuestionType;
+        return $this->questionType;
     }
 
-    public function setQuestionType(?string $QuestionType): static
+    public function setQuestionType(?string $questionType): static
     {
-        $this->QuestionType = $QuestionType;
+        $this->questionType = $questionType;
 
         return $this;
     }
 
-    public function isCheckboxField(): ?bool
+    public function getOptions(): ?array
     {
-        return $this->checkboxField;
+        return $this->options;
     }
 
-    public function setCheckboxField(?bool $checkboxField): static
+    public function setOptions(?array $options): static
     {
-        $this->checkboxField = $checkboxField;
+        $this->options = $options;
 
         return $this;
     }
 
-    public function getCheckboxText(): ?array
+    public function isIsRequired(): ?bool
     {
-        return $this->checkboxText;
+        return $this->isRequired;
     }
 
-    public function setCheckboxText(?array $checkboxText): static
+    public function setIsRequired(?bool $isRequired): static
     {
-        $this->checkboxText = $checkboxText;
+        $this->isRequired = $isRequired;
 
         return $this;
     }

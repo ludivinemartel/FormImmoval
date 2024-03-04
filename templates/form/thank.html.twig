@@ -1,9 +1,5 @@
-
 {% block content %}
 
-<p class="mt-5 ml-5 mb-5">Merci pour votre réponse, notre négociateur {{ app.user.Forname }} {{ app.user.Name }} vous recontactera le plus rapidement possible si ce formulaire necessite une réponse de notre part <br>
-    Pour rester informé de nos nouveautés suivez-nous sur les réseaux sociaux ! 
-    {# mail du négociateur : {{ app.user.email }} #}
-</p>
+<p class="mt-5 ml-5 mb-5">{{ thankYouMessage }}</p>
 
 {% endblock %}

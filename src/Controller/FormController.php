@@ -4,7 +4,7 @@ namespace App\Controller;
 
 use App\Entity\FormTemplate;
 use App\Entity\FormQuestion;
-use App\Entity\FormReponse;
+use App\Entity\FormResponse;
 use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -14,8 +14,9 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use App\Service\EmailService;
 use Psr\Log\LoggerInterface;
+use App\Repository\FormTemplateRepository;
 
-class QuestionnaireController extends AbstractController
+class FormController extends AbstractController
 {
     private EntityManagerInterface $entityManager;
     private EmailService $emailService;
@@ -28,7 +29,7 @@ class QuestionnaireController extends AbstractController
         $this->logger = $logger;
     }
 
-    #[Route('/questionnaire/{formTemplateId}', name: 'questionnaire_show')]
+    #[Route('/form/{formTemplateId}', name: 'form_show')]
     public function showForm($formTemplateId): Response
     {
         $formTemplate = $this->entityManager->getRepository(FormTemplate::class)->find($formTemplateId);
@@ -44,8 +45,9 @@ class QuestionnaireController extends AbstractController
             'questions' => $questions,
         ]);
     }
+
     #[Route('/submit/{formTemplateId}', name: 'submit', methods: ['POST'])]
-    public function FormSubmission(Request $request, int $formTemplateId, EmailService $emailService): Response
+    public function FormSubmission(Request $request, int $formTemplateId, EmailService $emailService, FormTemplateRepository $formTemplateRepository): Response
     {
         try {
             // Récupérer les données brutes du formulaire
@@ -59,24 +61,45 @@ class QuestionnaireController extends AbstractController
                 throw $this->createNotFoundException('Formulaire non trouvé');
             }
     
-            // Récupérer l'utilisateur connecté
-            $user = $this->getUser();
+            // Récupérer le message de remerciement associé au formulaire
+            $thankYouMessage = $formTemplate->getThankYouMessage();
     
-            // Vérifier si un utilisateur est connecté
-            if (!$user) {
-                throw $this->createAccessDeniedException('Utilisateur non connecté');
+            // Vérifier si un utilisateur est connecté et s'il s'agit d'un objet User
+            $user = $this->getUser();
+            if (!$user instanceof User) {
+                throw $this->createAccessDeniedException('Utilisateur non connecté ou non autorisé');
             }
     
             // Récupérer la date actuelle
             $currentDate = new \DateTimeImmutable();
     
-            // Récupérer les réponses dans la base de données
-            foreach ($formData['form_responses'] as $formQuestionId => $responseText) {
-                // Créer une nouvelle instance de l'entité FormReponse
-                $formReponse = new FormReponse();
+            // Récupérer les informations sur les questions obligatoires du formulaire
+            $requiredQuestionIds = $formTemplateRepository->findRequiredQuestionIds($formTemplateId);
     
-                // Set la réponse dans l'entité
-                $formReponse->setFormTextAnswer($responseText);
+            // Récupérer les réponses dans la base de données
+            foreach ($formData['form_responses'] as $formQuestionId => $response) {
+                // Vérifier si la question est obligatoire
+                $isRequired = in_array($formQuestionId, $requiredQuestionIds);
+    
+                // Vérifier si la réponse est vide pour les questions obligatoires uniquement
+                if ($isRequired && empty($response)) {
+                    throw new \Exception('La réponse à la question ne peut pas être vide');
+                }
+    
+                // Créer une nouvelle instance de l'entité FormReponse
+                $formReponse = new FormResponse();
+    
+                // Si la réponse est un tableau, il s'agit de cases à cocher, nous devons les traiter différemment
+                if (is_array($response)) {
+                    // Convertir le tableau de réponses en une chaîne de caractères séparée par des virgules
+                    $responseText = implode(',', $response);
+    
+                    // Set la réponse dans l'entité
+                    $formReponse->setFormTextAnswer($responseText);
+                } else {
+                    // Set la réponse dans l'entité
+                    $formReponse->setFormTextAnswer($response);
+                }
     
                 // Associer le formulaire aux réponses
                 $formReponse->setFormTemplateTitle($formTemplate);
@@ -95,35 +118,31 @@ class QuestionnaireController extends AbstractController
             // Flush les changements dans la base de données
             $this->entityManager->flush();
     
-         // Récupérer l'utilisateur connecté
-            $user = $this->getUser();
-            if (!$user instanceof User) {
-            throw $this->createAccessDeniedException('Utilisateur non connecté');
-            }
-            
-           // Envoi de l'e-mail de notification au négociateur
-           $userEmail = $user->getEmail();
-
-           // Vérifier si l'adresse e-mail de l'utilisateur est valide et non vide
+            // Récupérer l'adresse e-mail de l'utilisateur
+            $userEmail = $user->getEmail();
+    
+            // Vérifier si l'adresse e-mail de l'utilisateur est valide et non vide
             if (!$userEmail) {
-            throw new \Exception('L\'adresse e-mail de l\'utilisateur est vide');
+                throw new \Exception('L\'adresse e-mail de l\'utilisateur est vide');
             }
-           $emailService->sendEmail($userEmail);
+    
+            // Envoi de l'e-mail de notification au négociateur
+            $emailService->sendEmail($userEmail);
     
             // Afficher l'e-mail de l'utilisateur dans les journaux ou dans la sortie de l'application
             $this->logger->info('Adresse e-mail de l\'utilisateur : ' . $userEmail);
-
-            // Passer le nom et le prénom à la vue de la page de remerciement
+    
+            // Passer le message de remerciement et les données de l'utilisateur à la vue de la page de remerciement
             return $this->render('form/thank.html.twig', [
-               'user'=> $user,
-
+                'user'=> $user,
+                'thankYouMessage' => $thankYouMessage,
             ]);
         } catch (\Throwable $e) {
             // Gérer l'erreur
             throw $e;
         }
     }
-
+    
     #[Route('/user/close-form/{formTemplateId}/{date}', name: 'app_user_close_form', methods: ['POST'])]
     public function DeleteForm(int $formTemplateId, string $date): RedirectResponse
     {
@@ -131,7 +150,7 @@ class QuestionnaireController extends AbstractController
         $formTemplate = $this->entityManager->getRepository(FormTemplate::class)->find($formTemplateId);
     
         // Récupérer les réponses dans la base de données
-        $formResponses = $this->entityManager->getRepository(FormReponse::class)->findBy([
+        $formResponses = $this->entityManager->getRepository(FormResponse::class)->findBy([
             'FormTemplateTitle' => $formTemplate,
             'Date' => new \DateTimeImmutable($date),
    
@@ -155,5 +174,4 @@ class QuestionnaireController extends AbstractController
         return $this->redirectToRoute('user_dashboard');
 
     }
-
 }    

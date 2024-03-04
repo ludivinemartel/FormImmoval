@@ -12,38 +12,54 @@
 </head>
 
 <body>
-{% block content %}
-<div class="container">
-    <h1 class="d-flex justify-content-center mt-3 font-weight-normal">{{ formTemplate.title }}</h1>
+    {% block content %}
+    <div class="container">
+        <h1 class="d-flex justify-content-center mt-3 font-weight-normal">{{ formTemplate.title }}</h1>
+    
+        <!-- Barre de progression -->
+        <div class="progress mt-3">
+            <div class="progress-bar bg-info" role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+        </div>
 
-    <!-- Barre de progression -->
-    <div class="progress mt-3">
-        <div class="progress-bar bg-info" role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
-    </div>
-
-    <form method="post" action="{{ path('submit', {'formTemplateId': formTemplate.id}) }}" class="mx-auto">
-        {% set questionCount = 0 %}
-        {% for question in questions %}
-            {% if questionCount % 4 == 0 %}
-                {% if questionCount != 0 %}
-                    <button type="button" class="btn btn-secondary mt-3 prev-section" data-section-id="{{ questionCount / 4 }}">Retour</button>
-                    <button type="button" class="btn btn-info mt-3 next-section">Suivant</button>
-                    </div><!-- fermer la section précédente -->
-                {% endif %}
-                <div class="section" id="section{{ questionCount / 4 }}">
+        <form method="post" action="{{ path('submit', {'formTemplateId': formTemplate.id}) }}" class="mx-auto">
+            {% set questionCount = 0 %}
+            {% for question in questions %}
+        {% if questionCount % 4 == 0 %}
+            {% if questionCount != 0 %}
+                <button type="button" class="btn btn-secondary mt-3 prev-section" data-section-id="{{ questionCount / 4 }}">Retour</button>
+                <button type="button" class="btn btn-info mt-3 next-section">Suivant</button>
+                </div><!-- fermer la section précédente -->
             {% endif %}
-            <div class="form-floating">
-                <label>{{ question.questionText }}</label> <br>
-                <input class="form-control" type="text" name="form_responses[{{ question.id }}]"> <br>
-                <input type="hidden" name="formQuestionId[{{ question.id }}]" value="{{ question.id }}">
-            </div>
-            {% set questionCount = questionCount + 1 %}
-        {% endfor %}
-        <button type="button" class="btn btn-secondary mt-3 prev-section d-none" data-section-id="{{ questionCount / 4 }}">Retour</button>
-        <button type="submit" class="btn btn-info mt-3 d-none">Soumettre</button>
-    </form>
-</div>
-{% endblock %}
+            <div class="section" id="section{{ questionCount / 4 }}">
+        {% endif %}
+        <div class="form-floating">
+            <label for="form_responses_{{ question.id }}">{{ question.questionText }}{% if question.isRequired %}<span style="color: red;"> *</span>{% endif %}</label>
+            {% if question.questionType == 'select' %}
+                <select class="form-control" name="form_responses[{{ question.id }}]" id="form_responses_{{ question.id }}">
+                    <option value="">Sélectionner une option</option>
+                    {% for option in question.options %}
+                        <option value="{{ option }}">{{ option }}</option>
+                    {% endfor %}
+                </select>
+            {% elseif question.questionType == 'checkbox' %}
+                {% for option in question.options %}
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="form_responses[{{ question.id }}][]" id="option{{ loop.index }}" value="{{ option }}">
+                        <label class="form-check-label" for="option{{ loop.index }}">{{ option }}</label>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <input class="form-control" type="text" name="form_responses[{{ question.id }}]" id="form_responses_{{ question.id }}">
+            {% endif %}
+            <input type="hidden" name="formQuestionId[{{ question.id }}]" value="{{ question.id }}">
+        </div>
+        {% set questionCount = questionCount + 1 %}
+    {% endfor %}
+            <button type="button" class="btn btn-secondary mt-3 prev-section d-none" data-section-id="{{ questionCount / 4 }}">Retour</button>
+            <button type="submit" class="btn btn-info mt-3 d-none">Soumettre</button>
+        </form>
+    </div>
+    {% endblock %}
 
 {% block javascripts %}
     <script>

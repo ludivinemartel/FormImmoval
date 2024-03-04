@@ -4,18 +4,14 @@ namespace App\Controller;
 
 use App\Entity\User;
 use App\Entity\FormTemplate;
-use App\Entity\FormReponse;
-use App\Form\UserType;
-use App\Repository\UserRepository;
+use App\Entity\FormResponse;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use App\Controller\QuestionnaireController;
+use App\Controller\FormController;
 use App\Service\CalendarGenerator;
-
-
+use Symfony\Bundle\SecurityBundle\Security;
 
 #[Route('/user')]
 class UserController extends AbstractController
@@ -23,11 +19,13 @@ class UserController extends AbstractController
 
     private EntityManagerInterface $entityManager;
     private $calendarGenerator;
+    private $security;
 
-    public function __construct(EntityManagerInterface $entityManager, CalendarGenerator $calendarGenerator)
+    public function __construct(EntityManagerInterface $entityManager, CalendarGenerator $calendarGenerator, Security $security)
     {
         $this->entityManager = $entityManager;
         $this->calendarGenerator = $calendarGenerator;
+        $this->security = $security;
     }
 
     public function dashboard(): Response
@@ -43,7 +41,8 @@ class UserController extends AbstractController
         
         // Récupérer les 4 premières réponses pour chaque formulaire
         foreach ($formTemplates as $formTemplate) {
-            $responses = $this->entityManager->getRepository(FormReponse::class)->findBy(
+            // Modifier la requête pour filtrer par utilisateur
+            $responses = $this->entityManager->getRepository(FormResponse::class)->findBy(
                 ['FormTemplateTitle' => $formTemplate, 'user' => $user],
                 ['Date' => 'DESC'],
                 4 // Limiter le nombre de résultats à 4
@@ -60,31 +59,16 @@ class UserController extends AbstractController
             'calendar' => $calendar,
         ]);
     }
-    
-
-    #[Route('/add-form-template/{userId}/{formTemplateId}', name: 'app_user_add_form_template', methods: ['GET'])]
-    public function addFormTemplateToUser(EntityManagerInterface $entityManager, $userId, $formTemplateId): Response
-    {
-        $user = $entityManager->getRepository(User::class)->find($userId);
-        $formTemplate = $entityManager->getRepository(FormTemplate::class)->find($formTemplateId);
-
-        if ($user && $formTemplate) {
-            $user->addFormTemplate($formTemplate);
-            $entityManager->flush();
-        }
-
-        return $this->redirectToRoute('user_dashboard');
-    }
 
     #[Route('/user/show-form/{userId}/{formTemplateId}', name: 'app_user_show_form')]
-    public function showForm($userId, $formTemplateId, QuestionnaireController $questionnaireController): Response
+    public function showForm($userId, $formTemplateId, FormController $formController): Response
 {
     // Récupérer l'utilisateur et le modèle de formulaire depuis la base de données
     $user = $this->entityManager->getRepository(User::class)->find($userId);
     $formTemplate = $this->entityManager->getRepository(FormTemplate::class)->find($formTemplateId);
 
     // Appeler l'action showForm du QuestionnaireController
-    return $questionnaireController->showForm($formTemplate);
+    return $formController->showForm($formTemplate);
 }
 
 #[Route('/user/show-answers/{formTemplateId}', name: 'app_user_show_answers', methods: ['GET'])]
@@ -98,9 +82,12 @@ public function showAnswers(int $formTemplateId): Response
         throw $this->createNotFoundException('Form Template not found');
     }
 
-    // Récupérer les réponses dans la base de données
-    $formResponses = $this->entityManager->getRepository(FormReponse::class)->findBy([
+    $user = $this->getUser();
+
+    // Récupérer les réponses dans la base de données pour l'utilisateur actuel
+    $formResponses = $this->entityManager->getRepository(FormResponse::class)->findBy([
         'FormTemplateTitle' => $formTemplate,
+        'user' => $user,
     ]);
 
     // Regrouper les réponses par date et formulaire
@@ -121,19 +108,19 @@ public function showAnswers(int $formTemplateId): Response
 public function showResponses(int $formTemplateId, string $date): Response
 {
     $formTemplate = $this->entityManager->getRepository(FormTemplate::class)->find($formTemplateId);
-  
+    $user = $this->getUser();
 
-    // Récupérer les réponses pour le formulaire et la date spécifiques
-    $formResponses = $this->entityManager->getRepository(FormReponse::class)->findBy([
+    // Récupérer les réponses pour le formulaire et la date spécifiques de l'utilisateur actuel
+    $formResponses = $this->entityManager->getRepository(FormResponse::class)->findBy([
         'FormTemplateTitle' => $formTemplate,
         'Date' => new \DateTimeImmutable($date),
+        'user' => $user,
     ]);
 
     return $this->render('user/show_response.html.twig', [
         'formTemplate' => $formTemplate,
         'formResponses' => $formResponses,
         'date' => $date,
- 
     ]);
 }
 

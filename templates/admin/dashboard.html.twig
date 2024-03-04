@@ -2,4 +2,15 @@
 
 {% block content %}
 <h2> 🎉 Bienvenue sur le tableau de bord communication !</h2><br>
+
+<div class="container">
+    <div>
+    <h3 class="mt-5 ml-5"> 📉 Statistiques des formulaires</h3><br>
+    
+    <p>Nombre total de formulaires&nbsp;: {{ totalFormTemplates }}</p>
+    <p>Nombre total de formulaires soumis&nbsp;: {{ totalFormResponses }}</p>
+    <p>Nombre total de formulaires qui aboutissent à un mandat&nbsp;:</p>
+    <p>Nombre total de formulaires qui aboutissent à une vente&nbsp;:</p>
+</div>
+
 {% endblock %}

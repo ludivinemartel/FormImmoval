@@ -8,7 +8,7 @@ use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\FormTemplate;
-use App\Entity\FormReponse;
+use App\Entity\FormResponse;
 use TCPDF;
 
 class PdfController extends AbstractController
@@ -30,7 +30,7 @@ class PdfController extends AbstractController
    $formTemplate = $this->entityManager->getRepository(FormTemplate::class)->find($formTemplateId);
 
    // Récupérer les réponses pour le formulaire spécifié et la date spécifiée
-   $formResponses = $this->entityManager->getRepository(FormReponse::class)->findBy([
+   $formResponses = $this->entityManager->getRepository(FormResponse::class)->findBy([
        'FormTemplateTitle' => $formTemplate,
        'Date' => new \DateTimeImmutable($date),
    ]);
@@ -60,7 +60,7 @@ class PdfController extends AbstractController
 
     // Créer une réponse BinaryFileResponse pour le téléchargement automatique
     $response = new BinaryFileResponse($filePath);
-    $response->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT, 'responses.pdf');
+    $response->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT, 'formulaire_immoval.pdf');
 
     return $response;
 }
