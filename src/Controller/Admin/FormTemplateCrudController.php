@@ -51,10 +51,10 @@ class FormTemplateCrudController extends AbstractCrudController
             return $action->setLabel('Ajouter un formulaire')->setIcon('fa fa-plus');
         })
 
-        ->add(Crud::PAGE_EDIT, Action::new('showFormFront', 'Voir le formulaire', 'fa fa-eye')->linkToRoute('questionnaire_show', function (FormTemplate $formTemplate) {
+        ->add(Crud::PAGE_EDIT, Action::new('showFormFront', 'Voir le formulaire', 'fa fa-eye')->linkToRoute('form_show', function (FormTemplate $formTemplate) {
             return ['formTemplateId' => $formTemplate->getId()];
         }))
-        ->add(Crud::PAGE_NEW, Action::new('showFormFront', 'Voir le formulaire', 'fa fa-eye')->linkToRoute('questionnaire_show', function (FormTemplate $formTemplate) {
+        ->add(Crud::PAGE_NEW, Action::new('showFormFront', 'Voir le formulaire', 'fa fa-eye')->linkToRoute('form_show', function (FormTemplate $formTemplate) {
             return ['formTemplateId' => $formTemplate->getId()];
         }));
     }

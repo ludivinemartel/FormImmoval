@@ -14,13 +14,13 @@ class EmailService
         $this->mailer = $mailer;
     }
 
-    public function sendEmail(string $userEmail): void
+    public function sendEmail(string $userEmail, string $emailText): void
     {
         $email = (new Email())
             ->from('contact@immoval.com')
             ->to("$userEmail")
             ->subject('Notification de soumission de formulaire')
-            ->text('Bonjour, une nouvelle réponse à l\'un de vos formulaires a été soumis.');
+            ->text($emailText);
 
         $this->mailer->send($email);
     }
