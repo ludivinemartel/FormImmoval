@@ -37,10 +37,10 @@ class UserController extends AbstractController
         // Récupérer tous les modèles de formulaires disponibles
         $formTemplates = $this->entityManager->getRepository(FormTemplate::class)->findAll();
         
-        // Initialiser un tableau pour stocker les 2 derniers prospects pour chaque formulaire
+        // Initialiser un tableau pour stocker les derniers prospects pour chaque formulaire
         $latestProspects = [];
         
-        // Récupérer les 4 premières réponses pour chaque formulaire
+        // Récupérer les 4 premières réponses de chaque formulaire
         foreach ($formTemplates as $formTemplate) {
             // Modifier la requête pour filtrer par utilisateur
             $responses = $this->entityManager->getRepository(FormResponse::class)->findBy(
@@ -49,7 +49,7 @@ class UserController extends AbstractController
                 4 // Limiter le nombre de résultats à 4
             );
     
-            // Garder seulement les 2 derniers prospects
+            // Garder seulement les derniers prospects
             $latestProspects[$formTemplate->getId()] = array_slice($responses, 0, 4);
         }
     
@@ -62,7 +62,7 @@ class UserController extends AbstractController
     }
 
     #[Route('/user/show-form/{userId}/{formTemplateId}', name: 'app_user_show_form')]
-    public function showForm($userId, $formTemplateId, FormController $formController): Response
+    public function showForm(int $userId, int $formTemplateId, FormController $formController): Response
 {
     // Récupérer l'utilisateur et le modèle de formulaire depuis la base de données
     $user = $this->entityManager->getRepository(User::class)->find($userId);

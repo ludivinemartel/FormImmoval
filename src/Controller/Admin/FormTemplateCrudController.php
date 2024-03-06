@@ -63,6 +63,7 @@ class FormTemplateCrudController extends AbstractCrudController
 {
     return [
         TextField::new('title')->setLabel('Titre du formulaire'),
+        TextareaField::new('introMessage')->setLabel('Message introduction')->onlyOnForms(),
         CollectionField::new('formQuestions')->setLabel('Questions du formulaire')
             ->setEntryType(FormQuestionType::class)
             ->onlyOnForms(),
