@@ -21,6 +21,32 @@ class FormResponseRepository extends ServiceEntityRepository
         parent::__construct($registry, FormResponse::class);
     }
 
+    public function countDistinctFormResponseIds(): int
+{
+    return $this->createQueryBuilder('f')
+        ->select('COUNT(DISTINCT f.formResponseId)')
+        ->getQuery()
+        ->getSingleScalarResult();
+}
+
+public function countMandats(): int
+{
+    return $this->createQueryBuilder('f')
+        ->select('COUNT(f.id)')
+        ->where('f.mandatDate IS NOT NULL')
+        ->getQuery()
+        ->getSingleScalarResult();
+}
+
+public function countVentes(): int
+{
+    return $this->createQueryBuilder('f')
+        ->select('COUNT(f.id)')
+        ->where('f.venteDate IS NOT NULL')
+        ->getQuery()
+        ->getSingleScalarResult();
+}
+
 //    /**
 //     * @return FormReponse[] Returns an array of FormReponse objects
 //     */

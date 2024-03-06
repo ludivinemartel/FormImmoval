@@ -12,6 +12,7 @@ use Symfony\Component\Routing\Annotation\Route;
 use App\Controller\FormController;
 use App\Service\CalendarGenerator;
 use Symfony\Bundle\SecurityBundle\Security;
+use Symfony\Component\HttpFoundation\Request;
 
 #[Route('/user')]
 class UserController extends AbstractController
@@ -116,10 +117,161 @@ public function showResponses(int $formTemplateId, string $date): Response
         'Date' => new \DateTimeImmutable($date),
         'user' => $user,
     ]);
+   // Initialiser les variables de date de mandat et de vente
+   $mandatDate = null;
+   $venteDate = null;
+   $responseDate = null;
+   $relanceDate = null;
 
+      // Parcourir les réponses de formulaire pour extraire les dates de mandat et de vente
+      foreach ($formResponses as $response) {
+        if ($response->getMandatDate() !== null) {
+            $mandatDate = $response->getMandatDate();
+        }
+        if ($response->getVenteDate() !== null) {
+            $venteDate = $response->getVenteDate();
+        }
+        if ($response->getResponseDate() !== null) {
+            $responseDate = $response->getResponseDate();
+        }
+        if ($response->getRelanceDate() !== null) {
+            $relanceDate = $response->getRelanceDate();
+        }
+    }
+    
     return $this->render('user/show_response.html.twig', [
         'formTemplate' => $formTemplate,
         'formResponses' => $formResponses,
+        'date' => $date,
+        'mandatDate' => $mandatDate,
+        'venteDate' => $venteDate,
+        'responseDate' => $responseDate,
+        'relanceDate' => $relanceDate,
+    ]);
+}
+
+#[Route('/user/save-mandat-date', name: 'app_user_save_mandat_date', methods: ['POST'])]
+public function saveMandatDate(Request $request): Response
+{
+    // Récupérer les données du formulaire
+    $formTemplateId = $request->request->get('formTemplateId');
+    $date = $request->request->get('date');
+
+    // Récupérer l'utilisateur
+    $user = $this->getUser();
+
+    // Récupérer le formulaire
+    $formTemplate = $this->entityManager->getRepository(FormTemplate::class)->find($formTemplateId);
+
+    // Mettre à jour la date de mandat dans l'entité FormResponse
+    $formResponse = $this->entityManager->getRepository(FormResponse::class)->findOneBy([
+        'FormTemplateTitle' => $formTemplate,
+        'Date' => new \DateTimeImmutable($date),
+        'user' => $user,
+    ]);
+    $formResponse->setMandatDate(new \DateTime());
+
+    // Enregistrer les changements
+    $this->entityManager->flush();
+
+// Redirection vers la page de suivi des réponses
+return $this->redirectToRoute('app_user_show_responses', [
+    'formTemplateId' => $formTemplateId,
+    'date' => $date,
+]);
+}
+
+#[Route('/user/save-vente-date', name: 'app_user_save_vente_date', methods: ['POST'])]
+public function saveVenteDate(Request $request): Response
+{
+     // Récupérer les données du formulaire
+     $formTemplateId = $request->request->get('formTemplateId');
+     $date = $request->request->get('date');
+ 
+     // Récupérer l'utilisateur
+     $user = $this->getUser();
+ 
+     // Récupérer le formulaire
+     $formTemplate = $this->entityManager->getRepository(FormTemplate::class)->find($formTemplateId);
+ 
+     // Mettre à jour la date de vente dans l'entité FormResponse
+     $formResponse = $this->entityManager->getRepository(FormResponse::class)->findOneBy([
+         'FormTemplateTitle' => $formTemplate,
+         'Date' => new \DateTimeImmutable($date),
+         'user' => $user,
+     ]);
+     $formResponse->setVenteDate(new \DateTime());
+ 
+     // Enregistrer les changements
+     $this->entityManager->flush();
+ 
+
+       // Redirection vers la page de suivi des réponses
+       return $this->redirectToRoute('app_user_show_responses', [
+        'formTemplateId' => $formTemplateId,
+        'date' => $date,
+    ]);
+}
+
+#[Route('/user/save-response-date', name: 'app_user_save_response_date', methods: ['POST'])]
+public function saveResponseDate(Request $request): Response
+{
+     // Récupérer les données du formulaire
+     $formTemplateId = $request->request->get('formTemplateId');
+     $date = $request->request->get('date');
+ 
+     // Récupérer l'utilisateur
+     $user = $this->getUser();
+ 
+     // Récupérer le formulaire
+     $formTemplate = $this->entityManager->getRepository(FormTemplate::class)->find($formTemplateId);
+ 
+     // Mettre à jour la date de vente dans l'entité FormResponse
+     $formResponse = $this->entityManager->getRepository(FormResponse::class)->findOneBy([
+         'FormTemplateTitle' => $formTemplate,
+         'Date' => new \DateTimeImmutable($date),
+         'user' => $user,
+     ]);
+     $formResponse->setResponseDate(new \DateTime());
+ 
+     // Enregistrer les changements
+     $this->entityManager->flush();
+ 
+       // Redirection vers la page de suivi des réponses
+       return $this->redirectToRoute('app_user_show_responses', [
+        'formTemplateId' => $formTemplateId,
+        'date' => $date,
+    ]);
+}
+
+#[Route('/user/save-relance-date', name: 'app_user_save_relance_date', methods: ['POST'])]
+public function saveRelanceDate(Request $request): Response
+{
+     // Récupérer les données du formulaire
+     $formTemplateId = $request->request->get('formTemplateId');
+     $date = $request->request->get('date');
+ 
+     // Récupérer l'utilisateur
+     $user = $this->getUser();
+ 
+     // Récupérer le formulaire
+     $formTemplate = $this->entityManager->getRepository(FormTemplate::class)->find($formTemplateId);
+ 
+     // Mettre à jour la date de vente dans l'entité FormResponse
+     $formResponse = $this->entityManager->getRepository(FormResponse::class)->findOneBy([
+         'FormTemplateTitle' => $formTemplate,
+         'Date' => new \DateTimeImmutable($date),
+         'user' => $user,
+     ]);
+     $formResponse->setRelanceDate(new \DateTime());
+ 
+     // Enregistrer les changements
+     $this->entityManager->flush();
+ 
+
+       // Redirection vers la page de suivi des réponses
+       return $this->redirectToRoute('app_user_show_responses', [
+        'formTemplateId' => $formTemplateId,
         'date' => $date,
     ]);
 }

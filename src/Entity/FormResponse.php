@@ -31,6 +31,21 @@ class FormResponse
     #[ORM\Column]
     private ?\DateTimeImmutable $Date = null;
 
+    #[ORM\Column(nullable: true)]
+    private ?\DateTime $mandatDate = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?\DateTime $venteDate = null;
+
+    #[ORM\Column(length: 500, nullable: true)]
+    private ?string $formResponseId = null;
+
+    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
+    private ?\DateTimeInterface $responseDate = null;
+
+    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
+    private ?\DateTimeInterface $relanceDate = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -96,4 +111,63 @@ class FormResponse
         return $this;
     }
 
+    public function getMandatDate(): ?\DateTime
+    {
+        return $this->mandatDate;
+    }
+
+    public function setMandatDate(?\DateTime $mandatDate): static
+    {
+        $this->mandatDate = $mandatDate;
+
+        return $this;
+    }
+
+    public function getVenteDate(): ?\DateTime
+    {
+        return $this->venteDate;
+    }
+
+    public function setVenteDate(?\DateTime $venteDate): static
+    {
+        $this->venteDate = $venteDate;
+
+        return $this;
+    }
+
+    public function getFormResponseId(): ?string
+    {
+        return $this->formResponseId;
+    }
+
+    public function setFormResponseId(?string $formResponseId): static
+    {
+        $this->formResponseId = $formResponseId;
+
+        return $this;
+    }
+
+    public function getResponseDate(): ?\DateTimeInterface
+    {
+        return $this->responseDate;
+    }
+
+    public function setResponseDate(?\DateTimeInterface $responseDate): static
+    {
+        $this->responseDate = $responseDate;
+
+        return $this;
+    }
+
+    public function getRelanceDate(): ?\DateTimeInterface
+    {
+        return $this->relanceDate;
+    }
+
+    public function setRelanceDate(?\DateTimeInterface $relanceDate): static
+    {
+        $this->relanceDate = $relanceDate;
+
+        return $this;
+    }
 }

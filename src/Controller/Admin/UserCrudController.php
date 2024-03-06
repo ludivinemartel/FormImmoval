@@ -59,10 +59,16 @@ class UserCrudController extends AbstractCrudController
         yield TextField::new('forname')
         ->setLabel('Prénom');
         yield TextField::new('phone')
-        ->setLabel('Téléphone')
+        ->setLabel('Numéro de téléphone professionnel')
         ->setSortable(false);
         yield TextField::new('email')
         ->setLabel('E-mail');
+        yield TextField::new('Agency')
+        ->setLabel('Agence');
+         yield TextField::new('emailredirection')
+        ->setLabel('Redirection email');
+        // yield TextField::new('password')
+        // ->setLabel('Mot de passe');
     }
 
     public function configureCrud(Crud $crud): Crud

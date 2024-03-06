@@ -55,7 +55,6 @@ class User implements PasswordAuthenticatedUserInterface, UserInterface
     #[Assert\NotBlank()]
     private ?string $password = 'password';
 
-
     private ?string $plainPassword = null;
 
     #[ORM\OneToOne(mappedBy: 'Users', cascade: ['persist', 'remove'])]
@@ -63,6 +62,10 @@ class User implements PasswordAuthenticatedUserInterface, UserInterface
 
     #[ORM\OneToMany(mappedBy: 'user', targetEntity: FormResponse::class)]
     private Collection $FormResponse;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    #[Assert\Email()]
+    private ?string $emailRedirection = null;
 
     public function __construct()
     {
@@ -242,6 +245,18 @@ class User implements PasswordAuthenticatedUserInterface, UserInterface
                 $formResponse->setUser(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getEmailRedirection(): ?string
+    {
+        return $this->emailRedirection;
+    }
+
+    public function setEmailRedirection(?string $emailRedirection): static
+    {
+        $this->emailRedirection = $emailRedirection;
 
         return $this;
     }

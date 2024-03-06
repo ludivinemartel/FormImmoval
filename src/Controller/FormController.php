@@ -56,11 +56,6 @@ class FormController extends AbstractController
             // Récupérer le formulaire associé aux réponses
             $formTemplate = $this->entityManager->getRepository(FormTemplate::class)->find($formTemplateId);
     
-            // Vérifier si le formulaire existe
-            if (!$formTemplate) {
-                throw $this->createNotFoundException('Formulaire non trouvé');
-            }
-    
             // Récupérer le message de remerciement associé au formulaire
             $thankYouMessage = $formTemplate->getThankYouMessage();
     
@@ -72,6 +67,9 @@ class FormController extends AbstractController
     
             // Récupérer la date actuelle
             $currentDate = new \DateTimeImmutable();
+    
+            // Générer l'identifiant unique pour cette soumission de formulaire
+            $formResponseId = $currentDate->format('YmdHis') . $formTemplateId . $user->getId();
     
             // Récupérer les informations sur les questions obligatoires du formulaire
             $requiredQuestionIds = $formTemplateRepository->findRequiredQuestionIds($formTemplateId);
@@ -89,7 +87,10 @@ class FormController extends AbstractController
                 // Créer une nouvelle instance de l'entité FormReponse
                 $formReponse = new FormResponse();
     
-                // Si la réponse est un tableau, il s'agit de cases à cocher, nous devons les traiter différemment
+                // Set la valeur de l'identifiant unique
+                $formReponse->setFormResponseId($formResponseId);
+    
+                // Si la réponse est un tableau, il s'agit des checkbox
                 if (is_array($response)) {
                     // Convertir le tableau de réponses en une chaîne de caractères séparée par des virgules
                     $responseText = implode(',', $response);
@@ -117,20 +118,26 @@ class FormController extends AbstractController
     
             // Flush les changements dans la base de données
             $this->entityManager->flush();
-    
-            // Récupérer l'adresse e-mail de l'utilisateur
+
+            // Récupérer l'email de redirection de l'utilisateur s'il est défini
+            $redirectedEmail = $user->getEmailRedirection();
+
+            // Récupérer l'email de l'utilisateur
             $userEmail = $user->getEmail();
-    
-            // Vérifier si l'adresse e-mail de l'utilisateur est valide et non vide
-            if (!$userEmail) {
-                throw new \Exception('L\'adresse e-mail de l\'utilisateur est vide');
-            }
-    
-            // Envoi de l'e-mail de notification au négociateur
-            $emailService->sendEmail($userEmail);
-    
-            // Afficher l'e-mail de l'utilisateur dans les journaux ou dans la sortie de l'application
-            $this->logger->info('Adresse e-mail de l\'utilisateur : ' . $userEmail);
+
+            // Utiliser l'email de redirection si disponible
+            $recipientEmail = $redirectedEmail ?? $userEmail;
+
+        // Construire le texte de l'email en fonction de la présence ou de l'absence de l'email de redirection
+        $emailText = '';
+        if ($redirectedEmail) {
+            $emailText = "Bonjour, vous avez reçu une nouvelle soumission de formulaire via une redirection d'email de $userEmail : veuillez vous connecter à sa session pour récupérer la réponse.";
+        } else {
+            $emailText = "Bonjour, une nouvelle réponse à l'un de vos formulaires a été soumis.";
+        }
+
+              // Envoyer l'email en utilisant le service EmailService
+        $emailService->sendEmail($recipientEmail, $emailText);
     
             // Passer le message de remerciement et les données de l'utilisateur à la vue de la page de remerciement
             return $this->render('form/thank.html.twig', [
@@ -142,6 +149,7 @@ class FormController extends AbstractController
             throw $e;
         }
     }
+    
     
     #[Route('/user/close-form/{formTemplateId}/{date}', name: 'app_user_close_form', methods: ['POST'])]
     public function DeleteForm(int $formTemplateId, string $date): RedirectResponse

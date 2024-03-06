@@ -31,45 +31,35 @@ class DashboardController extends AbstractDashboardController
     {
         // Récupérer le nombre total de modèles de formulaire
         $totalFormTemplates = $this->formTemplateRepository->count([]);
-
-        // Récupérer le nombre total de réponses soumises
-        $totalFormResponses = $this->getTotalFormResponses();
-
+    
+        // Récupérer les totaux mis à jour
+        $totals = $this->getTotalFormResponses();
+    
         return $this->render('admin/dashboard.html.twig', [
             'totalFormTemplates' => $totalFormTemplates,
-            'totalFormResponses' => $totalFormResponses,
+            'totalFormResponses' => $totals['totalFormResponses'],
+            'totalMandats' => $totals['totalMandats'],
+            'totalVentes' => $totals['totalVentes'],
         ]);
-    }
+    }    
 
-    private function getTotalFormResponses(): int
-    {
-        // Récupérer les réponses aux formulaires
-        $formResponses = $this->entityManager->getRepository(FormResponse::class)->findAll();
-    
-        // Initialiser un tableau pour stocker les clés uniques
-        $uniqueForms = [];
-    
-        // Parcourir les réponses et les regrouper par date, modèle de formulaire et utilisateur
-        foreach ($formResponses as $formResponse) {
-            // Récupérer la date, le modèle de formulaire et l'utilisateur
-            $formattedDate = $formResponse->getDate()->format('Y-m-d');
-            $formTemplateId = $formResponse->getFormTemplateTitle()->getId();
-            $userId = $formResponse->getUser()->getId();
-    
-            // Créer une clé unique en concaténant la date, le modèle de formulaire et l'utilisateur
-            $uniqueFormKey = $formattedDate . '_' . $formTemplateId . '_' . $userId;
-    
-            // Si la clé unique n'existe pas déjà, l'ajouter à notre tableau des clés uniques
-            if (!isset($uniqueForms[$uniqueFormKey])) {
-                $uniqueForms[$uniqueFormKey] = true;
-            }
-        }
+    private function getTotalFormResponses(): array
+{
+    // Récupérer le nombre total de formResponseId différents
+    $totalFormResponses = $this->formResponseRepository->countDistinctFormResponseIds();
 
-        // Compter le nombre d'entrées dans le tableau des clés uniques pour obtenir le nombre total de formulaires soumis
-        $totalFormResponses = count($uniqueForms);
-    
-        return $totalFormResponses;
-    }
+    // Récupérer le nombre total de mandats
+    $totalMandats = $this->formResponseRepository->countMandats();
+
+    // Récupérer le nombre total de ventes
+    $totalVentes = $this->formResponseRepository->countVentes();
+
+    return [
+        'totalFormResponses' => $totalFormResponses,
+        'totalMandats' => $totalMandats,
+        'totalVentes' => $totalVentes,
+    ];
+}
 
     public function configureDashboard(): Dashboard
     {
