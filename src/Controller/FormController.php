@@ -13,20 +13,17 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use App\Service\EmailService;
-use Psr\Log\LoggerInterface;
 use App\Repository\FormTemplateRepository;
 
 class FormController extends AbstractController
 {
     private EntityManagerInterface $entityManager;
     private EmailService $emailService;
-    private LoggerInterface $logger;
 
-    public function __construct(EntityManagerInterface $entityManager, EmailService $emailService, LoggerInterface $logger)
+    public function __construct(EntityManagerInterface $entityManager, EmailService $emailService)
     {
         $this->entityManager = $entityManager;
         $this->emailService = $emailService;
-        $this->logger = $logger;
     }
 
     #[Route('/form/{formTemplateId}', name: 'form_show')]
@@ -39,10 +36,12 @@ class FormController extends AbstractController
         }
 
         $questions = $formTemplate->getFormQuestions();
+        $introMessage = $formTemplate->getIntroMessage();
 
         return $this->render('form/show.html.twig', [
             'formTemplate' => $formTemplate,
             'questions' => $questions,
+            'introMessage' => $introMessage,
         ]);
     }
 
@@ -149,8 +148,7 @@ class FormController extends AbstractController
             throw $e;
         }
     }
-    
-    
+
     #[Route('/user/close-form/{formTemplateId}/{date}', name: 'app_user_close_form', methods: ['POST'])]
     public function DeleteForm(int $formTemplateId, string $date): RedirectResponse
     {
@@ -180,6 +178,5 @@ class FormController extends AbstractController
         $this->entityManager->flush();
        
         return $this->redirectToRoute('user_dashboard');
-
     }
 }    

@@ -27,6 +27,9 @@ class FormTemplate
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $slug = null;
 
+    #[ORM\Column(length: 2000, nullable: true)]
+    private ?string $introMessage = null;
+
     public function __construct()
     {
         $this->formQuestions = new ArrayCollection();
@@ -99,6 +102,18 @@ class FormTemplate
     public function setSlug(?string $slug): static
     {
         $this->slug = $slug;
+
+        return $this;
+    }
+
+    public function getIntroMessage(): ?string
+    {
+        return $this->introMessage;
+    }
+
+    public function setIntroMessage(?string $introMessage): static
+    {
+        $this->introMessage = $introMessage;
 
         return $this;
     }

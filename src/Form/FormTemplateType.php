@@ -16,6 +16,10 @@ class FormTemplateType extends AbstractType
     {
         $builder
             ->add('title', TextType::class)
+            ->add('introMessage', TextareaType::class, [
+                'required' => false,
+                'label' => 'Message introduction'
+            ])
             ->add('formQuestions', CollectionType::class, [
                 'entry_type' => FormQuestionType::class,
                 'allow_add' => true,
@@ -27,7 +31,7 @@ class FormTemplateType extends AbstractType
             ])
         ;
     }
-
+    
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
