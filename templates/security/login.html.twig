@@ -29,6 +29,8 @@
           <button type="submit" class="btn btn-info">
             Se connecter
           </button>
-    </form>
+        </form>
+        <p>Vous n'avez pas de compte ? <strong><a class="link-offset-2 link-underline link-underline-opacity-0" href="{{ path('security.registration') }}">S'inscrire</a></strong></p>
+        <p>Vous avez oublié votre mot de passe ? <strong><a class="link-offset-2 link-underline link-underline-opacity-0" href="{{ path ('app_forgot_password_request') }}">Réinitialiser</a></strong></p>
 </div>
 {% endblock %}

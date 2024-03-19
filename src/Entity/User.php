@@ -10,6 +10,8 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Validator\Constraints as Assert;
+use SymfonyCasts\Bundle\ResetPassword\Model\ResetPasswordRequestInterface;
+
 
 #[UniqueEntity('email')]
 #[ORM\Entity(repositoryClass: UserRepository::class)]
@@ -67,9 +69,14 @@ class User implements PasswordAuthenticatedUserInterface, UserInterface
     #[Assert\Email()]
     private ?string $emailRedirection = null;
 
+    #[ORM\OneToMany(mappedBy: 'user', targetEntity: ResetPasswordRequest::class)]
+    private Collection $resetPasswordRequests;
+
+
     public function __construct()
     {
         $this->FormResponse = new ArrayCollection();
+        $this->resetPasswordRequests = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -260,4 +267,34 @@ class User implements PasswordAuthenticatedUserInterface, UserInterface
 
         return $this;
     }
+
+    /**
+     * @return Collection<int, ResetPasswordRequestInterface>
+     */
+    public function getResetPasswordRequests(): Collection
+    {
+        return $this->resetPasswordRequests;
+    }
+
+    public function addResetPasswordRequest(ResetPasswordRequest $resetPasswordRequest): static
+    {
+        if (!$this->resetPasswordRequests->contains($resetPasswordRequest)) {
+            $this->resetPasswordRequests->add($resetPasswordRequest);
+            $resetPasswordRequest->setUser($this);
+        }
+    
+        return $this;
+    }
+
+    public function removeResetPasswordRequest(ResetPasswordRequest $resetPasswordRequest): static
+{
+    if ($this->resetPasswordRequests->removeElement($resetPasswordRequest)) {
+        // set the owning side to null (unless already changed)
+        if ($resetPasswordRequest->getUser() === $this) {
+            $resetPasswordRequest->setUser(null);
+        }
+    }
+
+    return $this;
+}
 }

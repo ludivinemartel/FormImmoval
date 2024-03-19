@@ -1,2 +1,5 @@
 easy_admin:
     add_new_item: "Ajouter une nouvelle question"
+
+reset_password:
+  expiration_message: "Ce lien expirera dans 1 heure."

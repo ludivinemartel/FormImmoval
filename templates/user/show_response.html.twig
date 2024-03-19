@@ -13,7 +13,7 @@
         {% if formResponses is empty %}
         <p>Aucune réponse pour le moment.</p>
         {% else %}
-        <h4 class="mb-3 mt-3 font-weight-normal">Formulaire reçu le {{ date|date('d/m/Y') }} :</h4>
+        <h4 class="mb-3 mt-3 font-weight-normal">Formulaire reçu le {{ date|date('d.m.Y') }} :</h4>
         <ul>
             {% for formResponse in formResponses %}
             <li>
@@ -106,7 +106,7 @@
     <!-- Champ de texte pour les notes -->
     <textarea id="noteField_{{ formTemplate.id }}_{{ app.user.id }}" class="form-control bg-warning border-0" rows="13" cols="40"></textarea>
 </div>
-
+</div>
 <script>
     // Récupérer le champ de texte pour les notes
     const noteField = document.getElementById('noteField_{{ formTemplate.id }}_{{ app.user.id }}');

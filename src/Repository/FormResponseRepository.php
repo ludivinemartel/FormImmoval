@@ -47,6 +47,23 @@ public function countVentes(): int
         ->getSingleScalarResult();
 }
 
+public function countEstimationFormSubmissionsThisMonth(): int
+{
+    $startDate = new \DateTime('first day of this month');
+    $endDate = new \DateTime('last day of this month');
+    $estimationFormId = 2; // 2 = ID du formulaire d'estimation
+    
+    return $this->createQueryBuilder('fr')
+        ->select('COUNT(DISTINCT fr.formResponseId)')
+        ->andWhere('fr.FormTemplateTitle = :formTemplateId')
+        ->andWhere('fr.Date BETWEEN :startDate AND :endDate')
+        ->setParameter('formTemplateId', $estimationFormId)
+        ->setParameter('startDate', $startDate)
+        ->setParameter('endDate', $endDate)
+        ->getQuery()
+        ->getSingleScalarResult();
+}
+
 //    /**
 //     * @return FormReponse[] Returns an array of FormReponse objects
 //     */
