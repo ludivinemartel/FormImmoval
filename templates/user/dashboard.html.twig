@@ -94,10 +94,10 @@
                                 {{ response.getFormTextAnswer()}} |
                             </tr>
                         {% endfor %}
-                            <tr rowspan="{{ responses|length }}">
-                                <a class="btn btn-info mt-2 ml-2" href="{{ path('app_user_show_responses', {'formTemplateId': formTemplate.id, 'date': responses.0.date|date('Y-m-d')}) }}">Afficher détail</a> 
-                                <br>
-                            </tr>
+                        <tr rowspan="{{ responses|length }}">
+                            <a class="btn btn-info mt-2 ml-2" href="{{ path('app_user_show_responses', {'formTemplateId': formTemplate.id, 'date': responses.0.date|date('Y-m-d H:i:s')}) }}">Afficher détail</a> 
+                            <br>
+                        </tr>                        
                         </tr>
                     {% else %}
                     {% endif %}

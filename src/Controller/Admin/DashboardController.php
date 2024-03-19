@@ -34,12 +34,16 @@ class DashboardController extends AbstractDashboardController
     
         // Récupérer les totaux mis à jour
         $totals = $this->getTotalFormResponses();
-    
+
+        // Récupérer le nombre de soumissions du formulaire "Formulaire d'estimation" ce mois-ci
+        $estimationFormSubmissionsThisMonth = $this->formResponseRepository->countEstimationFormSubmissionsThisMonth();
+
         return $this->render('admin/dashboard.html.twig', [
             'totalFormTemplates' => $totalFormTemplates,
             'totalFormResponses' => $totals['totalFormResponses'],
             'totalMandats' => $totals['totalMandats'],
             'totalVentes' => $totals['totalVentes'],
+            'estimationFormSubmissionsThisMonth' => $estimationFormSubmissionsThisMonth,
         ]);
     }    
 
@@ -83,5 +87,7 @@ class DashboardController extends AbstractDashboardController
             MenuItem::linkToCrud('Voir négociateurs', 'fas fa-eye', User::class),
             MenuItem::linkToCrud('Ajouter un négociateur', 'fas fa-plus', User::class)->setAction(Crud::PAGE_NEW),
         ]);
+        
+        MenuItem::linkToCrud('Soumissions de formulaires', 'fas fa-file-alt', FormResponse::class);
     }
 }

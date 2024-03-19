@@ -1,5 +1,10 @@
 easy_admin:
     entities:
+        FormResponse:
+            class: App\Entity\FormResponse
+            list:
+                actions:
+                    - { name: 'show', route: 'admin_show', label: 'Voir les détails' }
         FormTemplate:
             class: App\Entity\FormTemplate
             form:

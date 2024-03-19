@@ -68,7 +68,7 @@ class UserController extends AbstractController
     $user = $this->entityManager->getRepository(User::class)->find($userId);
     $formTemplate = $this->entityManager->getRepository(FormTemplate::class)->find($formTemplateId);
 
-    // Appeler l'action showForm du QuestionnaireController
+    // Appeler l'action showForm du FormController
     return $formController->showForm($formTemplate);
 }
 
@@ -98,10 +98,14 @@ public function showAnswers(int $formTemplateId): Response
         $groupedResponses[$date][] = $formResponse;
     }
 
+      // Récupérer le dernier formulaire
+      $lastResponse = end($formResponses);
+
     return $this->render('user/show_answers.html.twig', [
         'formTemplate' => $formTemplate,
         'groupedResponses' => $groupedResponses,
         'formResponses' => $formResponses,
+        'lastResponse' => $lastResponse,
     ]);
 }
 
@@ -111,12 +115,15 @@ public function showResponses(int $formTemplateId, string $date): Response
     $formTemplate = $this->entityManager->getRepository(FormTemplate::class)->find($formTemplateId);
     $user = $this->getUser();
 
-    // Récupérer les réponses pour le formulaire et la date spécifiques de l'utilisateur actuel
-    $formResponses = $this->entityManager->getRepository(FormResponse::class)->findBy([
-        'FormTemplateTitle' => $formTemplate,
-        'Date' => new \DateTimeImmutable($date),
-        'user' => $user,
-    ]);
+// Convertir la date fournie dans l'URL en objet DateTimeImmutable
+$formattedDate = new \DateTimeImmutable($date);
+
+// Récupérer les réponses pour le formulaire et la date spécifiques de l'utilisateur actuel
+$formResponses = $this->entityManager->getRepository(FormResponse::class)->findBy([
+    'FormTemplateTitle' => $formTemplate,
+    'Date' => $formattedDate, // Utilisation de l'objet DateTimeImmutable
+    'user' => $user,
+]);
    // Initialiser les variables de date de mandat et de vente
    $mandatDate = null;
    $venteDate = null;
@@ -267,7 +274,6 @@ public function saveRelanceDate(Request $request): Response
  
      // Enregistrer les changements
      $this->entityManager->flush();
- 
 
        // Redirection vers la page de suivi des réponses
        return $this->redirectToRoute('app_user_show_responses', [

@@ -1,21 +1,46 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Liste des réponses au formulaire {{ formTemplate.title }}{% endblock %}
+{% block title %}
+    Liste des réponses au formulaire {{ formTemplate.title }}
+{% endblock %}
 
 {% block body %}
     <h3 class="mt-5 ml-5 mb-5">Réponses au formulaire "{{ formTemplate.title }}"</h3>
-
-    {% if formResponses is empty %}
-        <p class="mt-5 ml-5 mb-5">Aucune réponse pour le moment.</p>
-    {% else %}
-        
-            {% for date, responses in groupedResponses %}
-                {% set formattedDate = date|date('d-m-Y') %}
-                    <h5 class="mt-4 ml-5 mb-4">Réponse {{ loop.index }} | {{ formattedDate }} | 
-                    <a class="btn btn-info" href="{{ path('app_user_show_responses', {'formTemplateId': formTemplate.id, 'date': date}) }}">
+    <div class="row">
+         <!-- Première colonne -->
+        <div class="col-sm-3 ml-5">
+            {% if lastResponse is not null %}
+                <h5 class="mt-4 ml-5 mb-4">
+                    Dernier formulaire reçu :
+                </h5>
+                {% set lastDate = lastResponse.getDate() %}
+                {% set formattedLastDate = lastDate|date('d.m.Y') %}
+                <h5 class="mt-4 ml-5 mb-4">Formulaire du {{ formattedLastDate }}
+                    <a class="btn btn-info"
+                        href="{{ path('app_user_show_responses', {'formTemplateId': formTemplate.id, 'date': lastDate|date('Y-m-d H:i:s')}) }}">
                         Voir
                     </a>
                 </h5>
-                    {% endfor %}
-    {% endif %}
+                {% endif %}
+        </div>
+        <!-- Deuxième colonne -->
+        <div class="col-sm-3">
+            {% if formResponses is empty %}
+                <p class="mt-5 ml-5 mb-5">Aucune réponse pour le moment.</p>
+            {% else %}
+                <h5 class="mt-4 ml-5 mb-4">
+                    Tous les formulaires :
+                </h5>
+                {% for date, responses in groupedResponses %}
+                    {% set formattedDate = date|date('d.m.Y') %}
+                    <h5 class="mt-4 ml-5 mb-4">Réponse {{ loop.index }} | {{ formattedDate }} |
+                        <a class="btn btn-info"
+                            href="{{ path('app_user_show_responses', {'formTemplateId': formTemplate.id, 'date': date}) }}">
+                            Voir
+                        </a>
+                    </h5>
+                {% endfor %}
+            {% endif %}
+        </div>
+    </div>
 {% endblock %}

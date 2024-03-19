@@ -1,0 +1,14 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ parent()}} - Réinitialiser votre mot de passe{% endblock %}
+
+{% block body %}
+<div>
+    <h1>Saisir votre nouveau mot de passe</h1>
+    {{ form_start(resetForm) }}
+    {{ form_widget(resetForm.plainPassword.first, {'attr': {'class': 'type', 'placeholder': 'Nouveau mot de passe'}}) }}
+    {{ form_widget(resetForm.plainPassword.second, {'attr': {'class': 'type', 'placeholder': 'Saisir à nouveau'}}) }}
+    <button class="bouton">Réinitaliser</button>
+    {{ form_end(resetForm) }}
+</div>
+{% endblock %}

@@ -1,0 +1,13 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ parent()}} - Confimation d'envoi du mail{% endblock %}
+
+{% block body %}
+<div>
+    <p>
+        Si un compte correspondant à votre adresse e-mail existe, alors un mail vient d'être envoyé contenant un lien 
+        que vous pouvez utiliser pour réinitialiser votre mot de passe. Ce lien expirera dans <strong> {{ resetToken.expirationMessageKey|trans(resetToken.expirationMessageData, 'ResetPasswordBundle') }}</strong>.
+    </p>
+    <p>Si vous ne recevez pas d'e-mail, veuillez vérifier votre dossier de courrier indésirable ou <a href="{{ path('app_forgot_password_request') }}"><strong>réessayez</strong></a>.</p>
+</div>
+{% endblock %}
